@@ -35,10 +35,16 @@ fi
 # Install alien, needed for DEB to RPM conversion
 install_dependencies()
 {
-    # Add the needed repository
-    zypper ar -f http://download.opensuse.org/repositories/utilities/openSUSE_12.2/ utilities
+    if ! zypper lr -d | \
+        egrep -q 'http://download.opensuse.org/repositories/utilities/openSUSE_12.2/? '
+    then
+        # Add the needed repository
+        zypper ar -f http://download.opensuse.org/repositories/utilities/openSUSE_12.2/ utilities
+    fi
+
     # Refresh repositories
     zypper refresh
+
     # Install alien for DEB conversion, libpng12
     zypper install -lny alien libpng12-0
 }
