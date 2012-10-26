@@ -109,9 +109,14 @@ done
 
 # Create a wrapper script to include the compatibility-libraries
 echo "Create a wrapper script to include the compatibility-libraries..."
-rm -f /usr/bin/spotify
-echo 'LD_LIBRARY_PATH=/usr/lib64/spotify /usr/share/spotify/spotify' > /usr/bin/spotify
+mv /usr/bin/spotify{,.orig}
+cat <<EOF > /usr/bin/spotify
+#!/bin/sh
+
+LD_LIBRARY_PATH=$SPOTIFY_LIBDIR /usr/share/spotify/spotify "\$@"
+EOF
 chmod 755 /usr/bin/spotify
+chmod a-x /usr/bin/spotify.orig
 
 # Clean up
 echo "Clean up working directory..."
