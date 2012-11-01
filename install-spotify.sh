@@ -130,6 +130,7 @@ chmod 755 /usr/bin/spotify
 
 # Clean up
 echo "Clean up working directory..."
-rm -f $tempdir/spotify-client*.rpm
+rm -f $tempdir/spotify-client*.{deb,rpm}
+rmdir $tempdir
 
 echo "Done!"
