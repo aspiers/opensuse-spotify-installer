@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Credits for original version go to arminw on spotify forums:
+#
+# http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/td-p/143468
 
 # Name of files residing on Spotify repository
 # http://repository.spotify.com/pool/non-free/s/spotify/
