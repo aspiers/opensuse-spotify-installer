@@ -59,10 +59,10 @@ unstructured communication.  Trying to install Spotify after every
 distribution upgrade typically involves the following steps:
 
 1. google for something like 'spotify opensuse 12.2'
-2. wade through a *huge* number of hits from web forum threads or blog post,
+2. wade through a *huge* number of hits from web forum threads or blog post or wiki page,
    many of which are too old to be useful
 3. select the most promising looking hit
-4. wade through a long thread
+4. wade through a long forum thread or web page
 5. re-live other people's trial-and-error experiences
 6. realise that most people on this thread don't really know what they're doing
    and no-one fully figured it out
