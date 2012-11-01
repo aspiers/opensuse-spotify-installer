@@ -43,7 +43,7 @@ parse_args () {
 check_root () {
     if [ "$(id -u)" != "0" ]
     then
-        echo "Script must be run as root, exiting..."
+        echo "Script must be run as root; aborting..."
         exit 1
     fi
 }
