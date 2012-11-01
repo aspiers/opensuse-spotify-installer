@@ -81,7 +81,7 @@ safe_run () {
 
 check_root () {
     if [ "$(id -u)" != "0" ]; then
-        echo "Script must be run as root; aborting..."
+        echo "Script must be run as root; aborting."
         exit 1
     fi
 }
