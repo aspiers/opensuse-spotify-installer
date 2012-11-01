@@ -22,7 +22,7 @@ XBIT=$(uname -m)
 
 # Create and change to working directory
 mkdir -p $WDIR
-pushd $WDIR
+cd $WDIR
 
 # Check if user is root or in sudo mode
 UIC=$(id -u)
@@ -80,6 +80,7 @@ then
     wget http://repository.spotify.com/pool/non-free/s/spotify/$FNAME
 else 
     echo "Spotify .deb package already exists: $WDIR/$FNAME"
+    echo "Skipping download."
 fi
 
 # Convert to RPM
