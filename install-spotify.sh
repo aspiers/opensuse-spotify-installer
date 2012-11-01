@@ -6,6 +6,8 @@
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
+SPOTIFY_BIN="/usr/bin/spotify"
+
 POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
 
 # Name of file residing within official Spotify repository above
@@ -17,19 +19,25 @@ FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
 # ============================================================================ #
 
 main () {
-    tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
-    cd "$tempdir"
-
     parse_args "$@"
+
     check_root
-    check_architecture
-    install_dependencies
-    download_spotify_deb
-    convert_to_rpm
-    install_spotify_rpm
-    create_spotify_libdir
-    create_wrapper_script
-    clean_up
+    get_libdir
+
+    if [ -z "$uninstall" ]; then
+        tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
+        cd "$tempdir"
+
+        install_dependencies
+        download_spotify_deb
+        convert_to_rpm
+        install_spotify_rpm
+        create_spotify_libdir
+        create_wrapper_script
+        clean_up
+    else
+        uninstall
+    fi
 
     echo "Done!"
 }
@@ -50,6 +58,7 @@ usage () {
 
     cat <<EOF >&2
 Usage: $me [DEB-NAME]
+       $me -u | --uninstall
 
 DEB-NAME is the basename of the upstream .deb package, and defaults to:
 
@@ -59,9 +68,25 @@ EOF
 }
 
 parse_args () {
-    if [ "$1" == '-h' ] || [ "$1" == '--help' ]; then
-        usage 0
-    fi
+    uninstall=
+
+    while [ $# != 0 ]; do
+        case "$1" in
+            -h|--help)
+                usage 0
+                ;;
+            -u|--uninstall)
+                uninstall=y
+                shift
+                ;;
+            -*)
+                usage "Unrecognised option: $1"
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
 
     if [ $# -gt 1 ]; then
         usage
@@ -86,7 +111,7 @@ check_root () {
     fi
 }
 
-check_architecture () {
+get_libdir () {
     arch=$(arch)
     if [ "$arch" == "x86_64" ]; then
         FNAME=${FNAME}_amd64.deb
@@ -98,6 +123,8 @@ check_architecture () {
         echo "Sorry, $arch architecture isn't supported.  Aborting."
         exit 1
     fi
+
+    spotify_libdir="$libdir/spotify"
 }
  
 install_dependencies () {
@@ -139,7 +166,6 @@ install_spotify_rpm () {
 }
 
 create_spotify_libdir () {
-    spotify_libdir="$libdir/spotify"
     safe_run mkdir -p $spotify_libdir
 
     # Create links to libraries for compatibility
@@ -164,21 +190,43 @@ create_spotify_libdir () {
 }
 
 create_wrapper_script () {
-    echo "Create a wrapper script to include the compatibility-libraries..."
-    if [ ! -L /usr/bin/spotify ]; then
+    echo "Create a wrapper script to include the compatibility libraries..."
+
+    if [ ! -L "$SPOTIFY_BIN" ]; then
         cat <<'EOF' >&2
-/usr/bin/spotify was not a symlink as expected!
+$SPOTIFY_BIN was not a symlink as expected!
 Can't safely remove; aborting.
 EOF
         exit 1
     fi
-    rm /usr/bin/spotify
-    cat <<EOF > /usr/bin/spotify
+    safe_run rm "$SPOTIFY_BIN"
+    cat <<EOF > "$SPOTIFY_BIN"
 #!/bin/sh
 
 LD_LIBRARY_PATH=$spotify_libdir /usr/share/spotify/spotify "\$@"
 EOF
-    chmod 755 /usr/bin/spotify
+    safe_run chmod 755 "$SPOTIFY_BIN"
+}
+
+uninstall () {
+    rpm -qa | grep '^spotify-client' | while read rpm; do
+        echo "Removing $rpm rpm ..."
+        safe_run rpm -ev "$rpm"
+    done
+
+    if [ -e "$spotify_libdir" ]; then
+        echo "Removing compatibility libraries ..."
+        rm -rf "$spotify_libdir"
+    else
+        echo "$spotify_libdir did not exist"
+    fi
+
+    if [ -e "$SPOTIFY_BIN" ]; then
+        echo "Removing wrapper script ..."
+        rm -f "$SPOTIFY_BIN"
+    else
+        echo "$SPOTIFY_BIN did not exist"
+    fi
 }
 
 clean_up () {
