@@ -72,6 +72,13 @@ parse_args () {
     fi
 }
 
+safe_run () {
+    if ! "$@"; then
+        echo "$* failed! Aborting." >&2
+        exit 1
+    fi
+}
+
 check_root () {
     if [ "$(id -u)" != "0" ]; then
         echo "Script must be run as root; aborting..."
@@ -98,21 +105,21 @@ install_dependencies () {
         egrep -q 'http://download.opensuse.org/repositories/utilities/openSUSE_12.2/? '
     then
         # Add the needed repository
-        zypper ar -f http://download.opensuse.org/repositories/utilities/openSUSE_12.2/ utilities
+        safe_run zypper ar -f http://download.opensuse.org/repositories/utilities/openSUSE_12.2/ utilities
     fi
 
     # Refresh repositories
-    zypper refresh
+    safe_run zypper refresh
 
     # Install alien for .deb conversion, libopenssl-devel for
     # /usr/lib64 symlinks, and libpng12 to keep Spotify happy.
-    zypper install -lny alien libopenssl-devel libpng12-0
+    safe_run zypper install -lny alien libopenssl-devel libpng12-0
 }
 
 download_spotify_deb () {
     if [ ! -e ./$FNAME ]; then
         echo "Downloading Spotify .deb package..."
-        wget $POOL_URL/$FNAME
+        safe_run wget $POOL_URL/$FNAME
     else 
     # This should no longer happen now we're using a secure temporary directory.
         echo "Spotify .deb package already exists: $tempdir/$FNAME"
@@ -123,23 +130,17 @@ download_spotify_deb () {
 convert_to_rpm () {
     echo "Converting .deb to .rpm using alien; this will take a few moments ..."
     echo "(you can safely ignore an error from find during this step)"
-    if ! alien -k -r $FNAME; then
-        echo "alien conversion failed!  Aborting." >&2
-        exit 1
-    fi
+    safe_run alien -k -r $FNAME
 }
 
 install_spotify_rpm () {
     echo "Install Spotify..."
-    if ! rpm -i --force --nodeps $tempdir/spotify-client*.rpm; then
-        echo "rpm installation failed!  Aborting." >&2
-        exit 1
-    fi
+    safe_run rpm -i --force --nodeps $tempdir/spotify-client*.rpm
 }
 
 create_spotify_libdir () {
     spotify_libdir="$libdir/spotify"
-    mkdir -p $spotify_libdir
+    safe_run mkdir -p $spotify_libdir
 
     # Create links to libraries for compatibility
     echo "Created symbolic links for Spotify library compatibility..."
@@ -156,7 +157,7 @@ create_spotify_libdir () {
         lib=`echo $spotify_lib | cut -d '.' -f 1`.so
         if [ ! -e $spotify_libdir/$spotify_lib ]
         then
-            ln -s $libdir/$lib $spotify_libdir/$spotify_lib
+            safe_run ln -s $libdir/$lib $spotify_libdir/$spotify_lib
             echo "$spotify_libdir/$spotify_lib -> $libdir/$lib"
         fi
     done
