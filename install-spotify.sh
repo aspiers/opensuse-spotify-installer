@@ -55,12 +55,12 @@ fi
 if [ "$arch" == "x86_64" ]
 then
     FNAME=${FNAME}_amd64.deb
-    LIBDIR="/usr/lib64"
+    libdir="/usr/lib64"
 # 32-bit OS
 elif [ "$arch" == "i686" ]
 then
     FNAME=${FNAME}_i386.deb
-    LIBDIR="/usr/lib"
+    libdir="/usr/lib"
 else
     echo "Sorry, $arch architecture isn't supported.  Aborting."
     exit 1
@@ -90,19 +90,19 @@ echo "Install Spotify..."
 rpm -i --force --nodeps $tempdir/spotify-client*.rpm
 
 # Create directory for links
-SPOTIFY_LIBDIR="$LIBDIR/spotify"
-mkdir -p $SPOTIFY_LIBDIR
+spotify_libdir="$libdir/spotify"
+mkdir -p $spotify_libdir
 
 # Create links to libraries for compatibility
 echo "Created symbolic links for Spotify library compatibility..."
-SPOTIFY_LIB_DEPS=(libnspr4.so.0d libnss3.so.1d libnssutil3.so.1d libplc4.so.0d libsmime3.so.1d libcrypto.so.0.9.8 libssl.so.0.9.8)
-for spotify_lib in ${SPOTIFY_LIB_DEPS[@]}
+spotify_lib_deps=(libnspr4.so.0d libnss3.so.1d libnssutil3.so.1d libplc4.so.0d libsmime3.so.1d libcrypto.so.0.9.8 libssl.so.0.9.8)
+for spotify_lib in ${spotify_lib_deps[@]}
 do
     lib=`echo $spotify_lib | cut -d '.' -f 1`.so
-    if [ ! -e $SPOTIFY_LIBDIR/$spotify_lib ]
+    if [ ! -e $spotify_libdir/$spotify_lib ]
     then
-        ln -s $LIBDIR/$lib $SPOTIFY_LIBDIR/$spotify_lib
-        echo "$SPOTIFY_LIBDIR/$spotify_lib -> $LIBDIR/$lib"
+        ln -s $libdir/$lib $spotify_libdir/$spotify_lib
+        echo "$spotify_libdir/$spotify_lib -> $libdir/$lib"
     fi
 done
 
@@ -119,7 +119,7 @@ rm /usr/bin/spotify
 cat <<EOF > /usr/bin/spotify
 #!/bin/sh
 
-LD_LIBRARY_PATH=$SPOTIFY_LIBDIR /usr/share/spotify/spotify "\$@"
+LD_LIBRARY_PATH=$spotify_libdir /usr/share/spotify/spotify "\$@"
 EOF
 chmod 755 /usr/bin/spotify
 
