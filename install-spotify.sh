@@ -18,7 +18,7 @@ WDIR="/tmp/spotify"
 # ============================================================================ #
 
 # Check for system type
-XBIT=$(uname -m)
+arch=$(uname -m)
 
 # Create and change to working directory
 mkdir -p $WDIR
@@ -56,17 +56,17 @@ then
 fi
 
 # 64-bit OS
-if [ "$XBIT" == "x86_64" ]
+if [ "$arch" == "x86_64" ]
 then
     FNAME=${FNAME}_amd64.deb
     LIBDIR="/usr/lib64"
 # 32-bit OS
-elif [ "$XBIT" == "i686" ]
+elif [ "$arch" == "i686" ]
 then
     FNAME=${FNAME}_i386.deb
     LIBDIR="/usr/lib"
 else
-    echo "Not Supported"
+    echo "Sorry, $arch architecture isn't supported.  Aborting."
     exit 1
 fi
  
