@@ -67,15 +67,13 @@ parse_args () {
         usage
     fi
 
-    if [ -n "$1" ]
-    then
+    if [ -n "$1" ]; then
         FNAME=$1
     fi
 }
 
 check_root () {
-    if [ "$(id -u)" != "0" ]
-    then
+    if [ "$(id -u)" != "0" ]; then
         echo "Script must be run as root; aborting..."
         exit 1
     fi
@@ -83,12 +81,10 @@ check_root () {
 
 check_architecture () {
     arch=$(arch)
-    if [ "$arch" == "x86_64" ]
-    then
+    if [ "$arch" == "x86_64" ]; then
         FNAME=${FNAME}_amd64.deb
         libdir="/usr/lib64"
-    elif [ "$arch" == "i686" ]
-    then
+    elif [ "$arch" == "i686" ]; then
         FNAME=${FNAME}_i386.deb
         libdir="/usr/lib"
     else
@@ -114,8 +110,7 @@ install_dependencies () {
 }
 
 download_spotify_deb () {
-    if [ ! -e ./$FNAME ]
-    then
+    if [ ! -e ./$FNAME ]; then
         echo "Downloading Spotify .deb package..."
         wget $POOL_URL/$FNAME
     else 
@@ -157,8 +152,7 @@ create_spotify_libdir () {
         libcrypto.so.0.9.8
         libssl.so.0.9.8
     )
-    for spotify_lib in ${spotify_lib_deps[@]}
-    do
+    for spotify_lib in ${spotify_lib_deps[@]}; do
         lib=`echo $spotify_lib | cut -d '.' -f 1`.so
         if [ ! -e $spotify_libdir/$spotify_lib ]
         then
