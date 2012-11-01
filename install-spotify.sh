@@ -14,9 +14,6 @@ FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
 # End user editable section                                                    #
 # ============================================================================ #
 
-# Check for system type
-arch=$(uname -m)
-
 # Create and change to working directory
 tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
 cd "$tempdir"
@@ -51,12 +48,12 @@ then
     FNAME=$1
 fi
 
-# 64-bit OS
+# Check system type
+arch=$(arch)
 if [ "$arch" == "x86_64" ]
 then
     FNAME=${FNAME}_amd64.deb
     libdir="/usr/lib64"
-# 32-bit OS
 elif [ "$arch" == "i686" ]
 then
     FNAME=${FNAME}_i386.deb
