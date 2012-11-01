@@ -10,9 +10,6 @@
 # http://repository.spotify.com/pool/non-free/s/spotify/
 FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
 
-# Set working directory
-WDIR="/tmp/spotify"
-
 # ============================================================================ #
 # End user editable section                                                    #
 # ============================================================================ #
@@ -21,8 +18,8 @@ WDIR="/tmp/spotify"
 arch=$(uname -m)
 
 # Create and change to working directory
-mkdir -p $WDIR
-cd $WDIR
+tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
+cd "$tempdir"
 
 # Check if user is root or in sudo mode
 UIC=$(id -u)
@@ -79,7 +76,8 @@ then
     echo "Download Spotify .deb package..."
     wget http://repository.spotify.com/pool/non-free/s/spotify/$FNAME
 else 
-    echo "Spotify .deb package already exists: $WDIR/$FNAME"
+    # This should no longer happen now we're using a secure temporary directory.
+    echo "Spotify .deb package already exists: $tempdir/$FNAME"
     echo "Skipping download."
 fi
 
@@ -90,7 +88,7 @@ alien -k -r $FNAME
 
 # Install Spotify
 echo "Install Spotify..."
-rpm -i --force --nodeps $WDIR/spotify-client*.rpm
+rpm -i --force --nodeps $tempdir/spotify-client*.rpm
 
 # Create directory for links
 SPOTIFY_LIBDIR="$LIBDIR/spotify"
@@ -128,6 +126,6 @@ chmod 755 /usr/bin/spotify
 
 # Clean up
 echo "Clean up working directory..."
-rm -f $WDIR/spotify-client*.rpm
+rm -f $tempdir/spotify-client*.rpm
 
 echo "Done!"
