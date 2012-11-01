@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Automate installation of Spotify on openSUSE 12.2
+#
 # Credits for original version go to arminw on spotify forums:
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/td-p/143468
