@@ -38,8 +38,9 @@ install_dependencies()
     # Refresh repositories
     zypper refresh
 
-    # Install alien for .deb conversion, libpng12
-    zypper install -lny alien libpng12-0
+    # Install alien for .deb conversion, libopenssl-devel for
+    # /usr/lib64 symlinks, and libpng12 to keep Spotify happy.
+    zypper install -lny alien libopenssl-devel libpng12-0
 }
 
 # Check for parameter
