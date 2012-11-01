@@ -6,9 +6,11 @@
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
-# Name of files residing on Spotify repository
-# http://repository.spotify.com/pool/non-free/s/spotify/
+POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
+
+# Name of file residing within official Spotify repository above
 FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
+
 
 # ============================================================================ #
 # End user editable section                                                    #
@@ -32,8 +34,39 @@ main () {
     echo "Done!"
 }
 
+usage () {
+    # Call as: usage [EXITCODE] [USAGE MESSAGE]
+    exit_code=1
+    if [[ "$1" == [0-9] ]]; then
+        exit_code="$1"
+        shift
+    fi
+    if [ -n "$1" ]; then
+        echo "$*" >&2
+        echo
+    fi
+
+    me=`basename $0`
+
+    cat <<EOF >&2
+Usage: $me [DEB-NAME]
+
+DEB-NAME is the basename of the upstream .deb package, and defaults to:
+
+  $FNAME
+EOF
+    exit "$exit_code"
+}
+
 parse_args () {
-    # Check for parameter
+    if [ "$1" == '-h' ] || [ "$1" == '--help' ]; then
+        usage 0
+    fi
+
+    if [ $# -gt 1 ]; then
+        usage
+    fi
+
     if [ -n "$1" ]
     then
         FNAME=$1
@@ -83,8 +116,8 @@ install_dependencies () {
 download_spotify_deb () {
     if [ ! -e ./$FNAME ]
     then
-        echo "Download Spotify .deb package..."
-        wget http://repository.spotify.com/pool/non-free/s/spotify/$FNAME
+        echo "Downloading Spotify .deb package..."
+        wget $POOL_URL/$FNAME
     else 
     # This should no longer happen now we're using a secure temporary directory.
         echo "Spotify .deb package already exists: $tempdir/$FNAME"
