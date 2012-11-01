@@ -48,22 +48,23 @@ then
     FNAME=$1
 fi
 
-# Check system type
-arch=$(arch)
-if [ "$arch" == "x86_64" ]
-then
-    FNAME=${FNAME}_amd64.deb
-    libdir="/usr/lib64"
-elif [ "$arch" == "i686" ]
-then
-    FNAME=${FNAME}_i386.deb
-    libdir="/usr/lib"
-else
-    echo "Sorry, $arch architecture isn't supported.  Aborting."
-    exit 1
-fi
+check_architecture () {
+    arch=$(arch)
+    if [ "$arch" == "x86_64" ]
+    then
+        FNAME=${FNAME}_amd64.deb
+        libdir="/usr/lib64"
+    elif [ "$arch" == "i686" ]
+    then
+        FNAME=${FNAME}_i386.deb
+        libdir="/usr/lib"
+    else
+        echo "Sorry, $arch architecture isn't supported.  Aborting."
+        exit 1
+    fi
+}
  
-# Calls on dependencies installation function
+check_architecture
 install_dependencies
 
 # Download Spotify .deb package
