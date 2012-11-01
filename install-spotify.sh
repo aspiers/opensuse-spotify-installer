@@ -81,7 +81,7 @@ else
 fi
 
 # Convert to RPM
-echo "Convert .deb to .rpm ..."
+echo "Converting .deb to .rpm; this will take a few moments ..."
 echo "(you can safely ignore an error from find during this step)"
 alien -k -r $FNAME
 
