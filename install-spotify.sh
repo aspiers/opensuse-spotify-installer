@@ -22,8 +22,7 @@ tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
 cd "$tempdir"
 
 # Check if user is root or in sudo mode
-UIC=$(id -u)
-if [ "$UIC" != "0" ]
+if [ "$(id -u)" != "0" ]
 then
     echo "Script must be run as root, exiting..."
     exit
