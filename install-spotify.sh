@@ -95,7 +95,15 @@ mkdir -p $spotify_libdir
 
 # Create links to libraries for compatibility
 echo "Created symbolic links for Spotify library compatibility..."
-spotify_lib_deps=(libnspr4.so.0d libnss3.so.1d libnssutil3.so.1d libplc4.so.0d libsmime3.so.1d libcrypto.so.0.9.8 libssl.so.0.9.8)
+spotify_lib_deps=(
+    libnspr4.so.0d
+    libnss3.so.1d
+    libnssutil3.so.1d
+    libplc4.so.0d
+    libsmime3.so.1d
+    libcrypto.so.0.9.8
+    libssl.so.0.9.8
+)
 for spotify_lib in ${spotify_lib_deps[@]}
 do
     lib=`echo $spotify_lib | cut -d '.' -f 1`.so
