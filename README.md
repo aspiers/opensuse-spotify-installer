@@ -7,7 +7,9 @@ converting it to `.rpm` format, and then installing it along with some
 evil hacks to provide the necessary libraries where Spotify expects
 them to be.
 
-Currently only openSUSE 12.2 is supported.
+Currently only openSUSE 12.2 is supported.  Patches to support others
+(e.g. [Factory](http://en.opensuse.org/Portal:Factory)) are very
+welcome!
 
 The vast majority of the credit and thanks for this script
 go to [Armin](http://community.spotify.com/t5/user/viewprofilepage/user-id/190504) on the Spotify community forums, who wrote the
