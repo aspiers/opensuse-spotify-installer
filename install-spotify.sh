@@ -78,13 +78,19 @@ else
 fi
 
 # Convert to RPM
-echo "Converting .deb to .rpm; this will take a few moments ..."
+echo "Converting .deb to .rpm using alien; this will take a few moments ..."
 echo "(you can safely ignore an error from find during this step)"
-alien -k -r $FNAME
+if ! alien -k -r $FNAME; then
+    echo "alien conversion failed!  Aborting." >&2
+    exit 1
+fi
 
 # Install Spotify
 echo "Install Spotify..."
-rpm -i --force --nodeps $tempdir/spotify-client*.rpm
+if ! rpm -i --force --nodeps $tempdir/spotify-client*.rpm; then
+    echo "rpm installation failed!  Aborting." >&2
+    exit 1
+fi
 
 # Create directory for links
 spotify_libdir="$libdir/spotify"
