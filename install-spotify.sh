@@ -32,7 +32,7 @@ then
     exit
 fi
 
-# Install alien, needed for DEB to RPM conversion
+# Install alien, needed for .deb to .rpm conversion
 install_dependencies()
 {
     if ! zypper lr -d | \
@@ -45,7 +45,7 @@ install_dependencies()
     # Refresh repositories
     zypper refresh
 
-    # Install alien for DEB conversion, libpng12
+    # Install alien for .deb conversion, libpng12
     zypper install -lny alien libpng12-0
 }
 
@@ -73,17 +73,17 @@ fi
 # Calls on dependencies installation function
 install_dependencies
 
-# Download Spotify DEB package
+# Download Spotify .deb package
 if [ ! -e ./$FNAME ]
 then
-    echo "Download Spotify DEB package..."
+    echo "Download Spotify .deb package..."
     wget http://repository.spotify.com/pool/non-free/s/spotify/$FNAME
 else 
-    echo "Spotify DEB package already exists: $WDIR/$FNAME"
+    echo "Spotify .deb package already exists: $WDIR/$FNAME"
 fi
 
 # Convert to RPM
-echo "Convert DEB to RPM..."
+echo "Convert .deb to .rpm ..."
 alien -k -r $FNAME
 
 # Install Spotify
