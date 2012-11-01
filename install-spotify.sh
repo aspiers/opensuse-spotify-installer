@@ -110,14 +110,20 @@ done
 
 # Create a wrapper script to include the compatibility-libraries
 echo "Create a wrapper script to include the compatibility-libraries..."
-mv /usr/bin/spotify{,.orig}
+if [ ! -L /usr/bin/spotify ]; then
+    cat <<'EOF' >&2
+/usr/bin/spotify was not a symlink as expected!
+Can't safely remove; aborting.
+EOF
+    exit 1
+fi
+rm /usr/bin/spotify
 cat <<EOF > /usr/bin/spotify
 #!/bin/sh
 
 LD_LIBRARY_PATH=$SPOTIFY_LIBDIR /usr/share/spotify/spotify "\$@"
 EOF
 chmod 755 /usr/bin/spotify
-chmod a-x /usr/bin/spotify.orig
 
 # Clean up
 echo "Clean up working directory..."
