@@ -35,11 +35,11 @@ main () {
         create_spotify_libdir
         create_wrapper_script
         clean_up
+
+        echo "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
     else
         uninstall
     fi
-
-    echo "Done!"
 }
 
 usage () {
@@ -227,6 +227,8 @@ uninstall () {
     else
         echo "$SPOTIFY_BIN did not exist"
     fi
+
+    echo "De-installation done!"
 }
 
 clean_up () {
