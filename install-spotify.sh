@@ -138,9 +138,10 @@ install_dependencies () {
     # Refresh repositories
     safe_run zypper refresh
 
-    # Install alien for .deb conversion, libopenssl-devel for
-    # /usr/lib64 symlinks, and libpng12 to keep Spotify happy.
-    safe_run zypper install -lny alien libopenssl-devel libpng12-0
+    # Install alien and rpm-build for .deb conversion,
+    # libopenssl-devel for /usr/lib64 symlinks, and libpng12 to keep
+    # Spotify happy.
+    safe_run zypper install -lny alien rpm-build libopenssl-devel libpng12-0
 }
 
 download_spotify_deb () {
