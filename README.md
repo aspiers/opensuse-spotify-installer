@@ -29,6 +29,8 @@ Linux-based customers, let alone support them.
 3. Make it executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 4. Run it as the `root` user, e.g. from a terminal type `sudo ./install-spotify`, or `su`, enter the root password, and then `./install-spotify`
 
+for those alien haters. there's also a standard RPM specfile and toturial under ./spec directory. follow these steps to get a standard RPM.
+
 ## License
 
 I certainly cannot claim any copyright on this, since it is just
