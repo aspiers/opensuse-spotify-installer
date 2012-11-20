@@ -8,11 +8,15 @@ The Principle of Mumble RPMs is to license RPM specfiles under an open source ag
 
 Anyway, it's for those alien haters.
 
-# Rebuild
+# Easy script
 
-You need "rpmbuild" package from your system.
+Download [~/spotify-rpm-generator.sh](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spec/spotify-rpm-generator.sh) and run.
 
-Then find the hierachy like /usr/src/packages:
+# Build for yourself
+
+1. You need `rpmbuild` package from your system.
+
+2. Then find the hiearchy like `/usr/src/packages`:
 
 
 		-- BUILD
@@ -25,13 +29,11 @@ Then find the hierachy like /usr/src/packages:
 		-- SPECS
 		-- SRPMS
 
-it may be under your $HOME/rpmbuild (for openSUSE).
+It may be under your `$HOME/rpmbuild` (for openSUSE). Or you can just use `/usr/src/packages` but it may require root permission.
 
-Download spotify deb from [http://repository.spotify.com/pool/non-free/s/spotify](http://repository.spotify.com/pool/non-free/s/spotify)
+3. Download spotify deb from [http://repository.spotify.com/pool/non-free/s/spotify](http://repository.spotify.com/pool/non-free/s/spotify) and put it under `SOURCES`.
 
-Put it under SOURCES.
-
-Download this spec and put it under SPECS.
+4. Download this spec and put it under `SPECS`.
 
 It has no actual dependencies, so we just start building it:
 
@@ -40,13 +42,17 @@ It has no actual dependencies, so we just start building it:
 
 Generated packages will be under RPMS/x86_64 or RPMS/i586 directory.
 
-Use:
+5. Use:
 
 		sudo rpm -ivh --nodeps *.rpm
 
-to install it. (--nodeps is very important)
+or
 
-You need these runtime dependencies: 
+		sudo zypper install --no-refresh --force-resolution *.rpm
+
+to install it. (`--nodeps` or `--force-resolution` is very important!)
+
+6. You need these runtime dependencies: 
 
 * openSUSE: mozilla-nss, mozilla-nspr, libopenssl1_0_0 
 * Fedora: nss, nspr, openssl(>= 1.0.1) 

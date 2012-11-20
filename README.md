@@ -29,7 +29,21 @@ Linux-based customers, let alone support them.
 3. Make it executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 4. Run it as the `root` user, e.g. from a terminal type `sudo ./install-spotify`, or `su`, enter the root password, and then `./install-spotify`
 
-for those alien haters. there's also a standard RPM specfile and toturial under ./spec directory. follow these steps to get a standard RPM.
+## A alternative way
+
+`alien` is a convertor instead of a build tool. It's not the case like codecs that a flac convertor can make the same quality from wav as a flac recorder.
+
+Every package has an orientation, eg: a `deb` is optimized for Debian system, which has a great many differences (everywhere) against RPM system. eg: we put `python modules` in `/usr/lib/python-2.7/dist-packages` in Debian, but actually in openSUSE they should be placed under `/usr/lib/python-2.7/site-packages`. It's out of `alien`'s capacity to do such a path convertion.
+
+In short, `alien` is enough for personl use (of couse you can't be compulsive or a neat freak), but isn't enough for distribution (That's why openSUSE never just convert deb to make a distribution). like `checkinstall`, they both can't make **pure** packages.
+
+Under `~/spec` there's a shell script that generate a standard RPM under your `$HOME` directory (`/home/username`). Although there're still some obstacles to overcome, Spotify is now managable as all other packages under openSUSE. You can trace dependencies, remove in YaST and zypper, and it won't leave you a dirty `/usr`, everything is traced by RPM system. 
+
+### Shortcomings for now (maybe forever)
+
+* can't install using zypper/YaST/rpm painlessly.
+
+it's because we do the linking for `/usr/lib(64)/libnss.so.1d` stuff, which never exist in openSUSE. but Linux shared library finding machanism will try to find dependencies for every library (softlink or not) under `/usr/lib(64)`, which will cause a unresolvable error. but you can `sudo rpm -ivh --nodeps spotify-*.rpm` or `sudo zypper install --no-refresh --force-resolution spotify-*.rpm`.
 
 ## License
 
