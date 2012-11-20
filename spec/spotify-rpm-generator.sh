@@ -81,6 +81,14 @@ rm -rf /usr/src/packages/SPECS/*
 
 # install
 
+## dependencies
+
+echo "Resolving dependencies..."
+
+! [ `rpm -qa mozilla-nss` ] && zypper install --no-refresh mozilla-nss
+! [ `rpm -qa mozilla-nspr` ] && zypper install --no-refresh mozilla-nspr
+! [ `rpm -qa libopenssl1_0_0` ] && zypper install --no-refresh libopenssl1_0_0
+
 echo "Installing..."
 
 rpm -ivh --force --nodeps /home/$NORMAL_USER/spotify-*.rpm

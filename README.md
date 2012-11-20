@@ -33,17 +33,17 @@ Linux-based customers, let alone support them.
 
 `alien` is a convertor instead of a build tool. It's not the case like codecs that a flac convertor can make the same quality from wav as a flac recorder.
 
-Every package has an orientation, eg: a `deb` is optimized for Debian system, which has a great many differences (everywhere) against RPM system. eg: we put `python modules` in `/usr/lib/python-2.7/dist-packages` in Debian, but actually in openSUSE they should be placed under `/usr/lib/python-2.7/site-packages`. It's out of `alien`'s capacity to do such a path convertion.
+Every package has an orientation, eg: a `deb` is optimized for Debian system, which has a great many differences (everywhere) against RPM system. eg: we put `python modules` in `/usr/lib/python-2.7/dist-packages` in Debian, but actually in openSUSE they should be placed under `/usr/lib/python-2.7/site-packages`. It's out of `alien`'s capacity to do such a path conversion. Then it looks weird in your system, as the name itself tells, `alien`.
 
-In short, `alien` is enough for personl use (of couse you can't be compulsive or a neat freak), but isn't enough for distribution (That's why openSUSE never just convert deb to make a distribution). like `checkinstall`, they both can't make **pure** packages.
+In short, `alien` is enough for personl use (Of course you can't be too compulsive or a neat freak), but isn't enough for distribution (That's why we openSUSE packagers never make our distribution by just converting deb). Like `checkinstall`, they both can't make **pure** packages.
 
-Under `~/spec` there's a shell script that generate a standard RPM under your `$HOME` directory (`/home/username`). Although there're still some obstacles to overcome, Spotify is now managable as all other packages under openSUSE. You can trace dependencies, remove in YaST and zypper, and it won't leave you a dirty `/usr`, everything is traced by RPM system. 
+Under `~/spec` there's a shell script that generate a standard RPM under your `$HOME` directory (`/home/username`). Although there're still some obstacles to overcome, Spotify is now managable as all other packages in openSUSE. You can trace dependencies, remove from YaST and zypper, and it won't leave you a dirty `/usr`. Everything is taken care by RPM system. 
 
 ### Shortcomings for now (maybe forever)
 
-* can't install using zypper/YaST/rpm painlessly.
+* Can't install using zypper/YaST/rpm painlessly.
 
-it's because we do the linking for `/usr/lib(64)/libnss.so.1d` stuff, which never exist in openSUSE. but Linux shared library finding machanism will try to find dependencies for every library (softlink or not) under `/usr/lib(64)`, which will cause a unresolvable error. but you can `sudo rpm -ivh --nodeps spotify-*.rpm` or `sudo zypper install --no-refresh --force-resolution spotify-*.rpm`.
+It's because we do the linking for `/usr/lib(64)/libnss.so.1d` stuff, which never exist in openSUSE. But Linux shared library finding machanism will try to find dependencies for every library (softlink or not) under `/usr/lib(64)`, which will cause an unresolvable error. So actually it's a fault from Spotify company. But you still can `sudo rpm -ivh --nodeps spotify-*.rpm` or `sudo zypper install --no-refresh --force-resolution spotify-*.rpm` to install the RPM. 
 
 ## License
 
