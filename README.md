@@ -29,7 +29,7 @@ Linux-based customers, let alone support them.
 3. Make it executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 4. Run it as the `root` user, e.g. from a terminal type `sudo ./install-spotify`, or `su`, enter the root password, and then `./install-spotify`
 
-## A alternative way
+## An alternative way
 
 `alien` is a convertor instead of a build tool. It's not the case like codecs that a flac convertor can make the same quality from wav as a flac recorder.
 
