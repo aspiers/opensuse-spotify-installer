@@ -48,6 +48,13 @@ Even better, if you know how to fix a problem with the script, please
 [fork this repository](https://github.com/aspiers/opensuse-spotify-installer/fork_select), commit
 your fix, and then send me a [pull request](https://help.github.com/articles/using-pull-requests)!
 
+## Why not just use the new web-based player?
+
+There's a new browser-based Spotify player accessible via
+https://play.spotify.com/ or https://apps.facebook.com/get-spotify/
+
+However, [it does not seem to be generally available yet](http://howto.cnet.com/8301-11310_39-57551372-285/enable-spotifys-web-player-right-now/), and [is missing many features](http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-4-for-GNU-Linux/m-p/204364/highlight/true#M1687) compared to the standalone Linux client.
+
 ## Why is this script here on github?
 
 I hope it's kind of obvious from the above.  But since you
