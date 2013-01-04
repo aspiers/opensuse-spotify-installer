@@ -10,33 +10,34 @@ SPOTIFY_BIN="/usr/bin/spotify"
 
 POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
 
+#RPM_TOPDIR="/usr/src/packages"
+RPM_TOPDIR="$HOME/rpmbuild"
+RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
+RPM_SPEC_DIR="$RPM_TOPDIR/SPECS"
+
 # Name of file residing within official Spotify repository above
-FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
+RPM_NAME="spotify-client"
+VERSION="0.8.8.323.gd143501.250-1"
+BASENAME="${RPM_NAME}_$VERSION"
 
-
-# ============================================================================ #
-# End user editable section                                                    #
-# ============================================================================ #
+ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
 main () {
     parse_args "$@"
 
-    check_root
-    get_libdir
+    check_non_root
 
     if [ -z "$uninstall" ]; then
-        tempdir=$( mktemp -d /tmp/install-spotify.XXXXXXXXXXX )
-        cd "$tempdir"
-
-        install_dependencies
+        safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
         download_spotify_deb
-        convert_to_rpm
-        install_spotify_rpm
-        create_spotify_libdir
-        create_wrapper_script
-        clean_up
-
-        echo "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
+        echo
+        install_dependencies
+        echo
+        build_rpm
+        echo
+        install_rpm
+        echo
+        progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
     else
         uninstall
     fi
@@ -57,12 +58,8 @@ usage () {
     me=`basename $0`
 
     cat <<EOF >&2
-Usage: $me [DEB-NAME]
+Usage: $me
        $me -u | --uninstall
-
-DEB-NAME is the basename of the upstream .deb package, and defaults to:
-
-  $FNAME
 EOF
     exit "$exit_code"
 }
@@ -93,149 +90,143 @@ parse_args () {
     fi
 
     if [ -n "$1" ]; then
-        FNAME=$1
+        BASENAME=$1
     fi
 }
+
+progress () { tput bold; tput setaf 2; echo     "$*"; tput sgr0; }
+warn     () { tput bold; tput setaf 3; echo >&2 "$*"; tput sgr0; }
+error    () { tput bold; tput setaf 1; echo >&2 "$*"; tput sgr0; }
+fatal    () { error "$@"; exit 1; }
 
 safe_run () {
     if ! "$@"; then
-        echo "$* failed! Aborting." >&2
+        fatal "$* failed! Aborting." >&2
         exit 1
     fi
 }
 
-check_root () {
-    if [ "$(id -u)" != "0" ]; then
-        echo "Script must be run as root; aborting."
-        exit 1
+check_non_root () {
+    if [ "$(id -u)" = "0" ]; then
+        fatal "\
+Please run this script non-root, it's a bit safer that way.
+It will use sudo for commands which need root.  Aborting."
     fi
 }
 
-get_libdir () {
-    arch=$(arch)
-    if [ "$arch" == "x86_64" ]; then
-        FNAME=${FNAME}_amd64.deb
-        libdir="/usr/lib64"
-    elif [ "$arch" == "i686" ]; then
-        FNAME=${FNAME}_i386.deb
-        libdir="/usr/lib"
-    else
-        echo "Sorry, $arch architecture isn't supported.  Aborting."
-        exit 1
-    fi
-
-    spotify_libdir="$libdir/spotify"
-}
- 
 install_dependencies () {
-    if ! zypper lr -d | \
-        egrep -q 'http://download.opensuse.org/repositories/utilities/openSUSE_12.2/? '
-    then
-        # Add the needed repository
-        safe_run zypper ar -f http://download.opensuse.org/repositories/utilities/openSUSE_12.2/ utilities
+    if ! rpm -q libmp3lame0 >/dev/null; then
+        warn "\
+WARNING: You do not have libmp3lame0 installed, so playback of local
+mp3 files will not work.  Would you like me to install this from
+Packman now?
+"
+        echo -n "Type y/n> "
+        read answer
+        echo
+        case "$answer" in
+            y|yes|Y|YES)
+                install_libmp3lame0
+                ;;
+        esac
     fi
 
-    # Refresh repositories
-    safe_run zypper refresh
+    if rpm -q rpm-build >/dev/null; then
+        progress "rpm-build is already installed."
+    else
+        safe_run sudo zypper -n install -lny rpm-build
+    fi
+}
 
-    # Install alien and rpm-build for .deb conversion,
-    # libopenssl-devel for /usr/lib64 symlinks, and libpng12 to keep
-    # Spotify happy.
-    safe_run zypper install -lny alien rpm-build libopenssl-devel libpng12-0
+install_libmp3lame0 () {
+    if safe_run zypper lr -d | grep -iq 'packman'; then
+        progress "Packman repository is already configured - good :)"
+    else
+        safe_run sudo zypper ar -f http://packman.inode.at/suse/12.2/packman.repo
+        progress "Added Packman repository."
+    fi
+
+    echo
+    safe_run sudo zypper -n in -l libmp3lame0
+    echo
+    progress "Installed libmp3lame0."
 }
 
 download_spotify_deb () {
-    if [ ! -e ./$FNAME ]; then
-        echo "Downloading Spotify .deb package..."
-        safe_run wget $POOL_URL/$FNAME
-    else 
-    # This should no longer happen now we're using a secure temporary directory.
-        echo "Spotify .deb package already exists: $tempdir/$FNAME"
+    arch=$(arch)
+    if [ "$arch" == "x86_64" ]; then
+        deb=${BASENAME}_amd64.deb
+        rpmarch="x86_64"
+    elif [ "$arch" == "i686" ]; then
+        deb=${BASENAME}_i386.deb
+        rpmarch="i586"
+    else
+        fatal "
+Sorry, $arch architecture isn't supported.  If you think this is a
+mistake, please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL
+
+Aborting.
+"
+    fi
+
+    RPM_DIR="$RPM_TOPDIR/RPMS/$rpmarch"
+
+    dest="$RPM_SOURCE_DIR/$deb"
+    if [ ! -e "$dest" ]; then
+        echo "Downloading Spotify .deb package ..."
+        safe_run wget -O "$dest" "$POOL_URL/$deb"
+        progress ".deb downloaded."
+    else
+        progress "Spotify .deb package already exists:"
+        echo
+        echo "  ${dest/$HOME/~}"
+        echo
         echo "Skipping download."
     fi
 }
 
-convert_to_rpm () {
-    echo "Converting .deb to .rpm using alien; this will take a few moments ..."
-    echo "(you can safely ignore an error from find during this step)"
-    safe_run alien -k -r $FNAME
-}
+build_rpm () {
+    echo "About to build $RPM_NAME rpm; please be patient ..."
+    echo
+    sleep 3
+    safe_run rpmbuild -ba "$RPM_SPEC_DIR/spotify.spec"
 
-install_spotify_rpm () {
-    echo "Install Spotify..."
-    safe_run rpm -i --force --nodeps $tempdir/spotify-client*.rpm
-}
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
 
-create_spotify_libdir () {
-    safe_run mkdir -p $spotify_libdir
+    if ! [ -e "$rpm" ]; then
+        fatal "
+rpmbuild failed :-(  Please consider filing a bug at:
 
-    # Create links to libraries for compatibility
-    echo "Created symbolic links for Spotify library compatibility..."
-    spotify_lib_deps=(
-        libnspr4.so.0d
-        libnss3.so.1d
-        libnssutil3.so.1d
-        libplc4.so.0d
-        libsmime3.so.1d
-        libcrypto.so.0.9.8
-        libssl.so.0.9.8
-    )
-    for spotify_lib in ${spotify_lib_deps[@]}; do
-        lib=`echo $spotify_lib | cut -d '.' -f 1`.so
-        if [ ! -e $spotify_libdir/$spotify_lib ]
-        then
-            safe_run ln -s $libdir/$lib $spotify_libdir/$spotify_lib
-            echo "$spotify_libdir/$spotify_lib -> $libdir/$lib"
-        fi
-    done
-}
-
-create_wrapper_script () {
-    echo "Create a wrapper script to include the compatibility libraries..."
-
-    if [ ! -L "$SPOTIFY_BIN" ]; then
-        cat <<'EOF' >&2
-$SPOTIFY_BIN was not a symlink as expected!
-Can't safely remove; aborting.
-EOF
-        exit 1
+    $ISSUE_TRACKER_URL
+"
     fi
-    safe_run rm "$SPOTIFY_BIN"
-    cat <<EOF > "$SPOTIFY_BIN"
-#!/bin/sh
 
-LD_LIBRARY_PATH=$spotify_libdir /usr/share/spotify/spotify "\$@"
-EOF
-    safe_run chmod 755 "$SPOTIFY_BIN"
+    echo
+    progress "rpm successfully built!"
+}
+
+install_rpm () {
+    echo "Installing Spotify from the rpm we just built ..."
+    safe_run sudo zypper -n in "$rpm"
+
+    if ! rpm -q "$RPM_NAME" >/dev/null; then
+        error "Failed to install $rpm :-("
+        error "Please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL"
+    fi
 }
 
 uninstall () {
-    rpm -qa | grep '^spotify-client' | while read rpm; do
-        echo "Removing $rpm rpm ..."
-        safe_run rpm -ev "$rpm"
-    done
-
-    if [ -e "$spotify_libdir" ]; then
-        echo "Removing compatibility libraries ..."
-        rm -rf "$spotify_libdir"
+    if rpm -q "$RPM_NAME" >/dev/null; then
+        echo "Removing $RPM_NAME rpm ..."
+        safe_run sudo rpm -ev "$RPM_NAME"
+        progress "De-installation done!"
     else
-        echo "$spotify_libdir did not exist"
+        warn "$RPM_NAME was not installed; nothing to uninstall."
     fi
-
-    if [ -e "$SPOTIFY_BIN" ]; then
-        echo "Removing wrapper script ..."
-        rm -f "$SPOTIFY_BIN"
-    else
-        echo "$SPOTIFY_BIN did not exist"
-    fi
-
-    echo "De-installation done!"
-}
-
-clean_up () {
-    echo "Clean up working directory..."
-    rm -f $tempdir/spotify-client*.{deb,rpm}
-    rmdir $tempdir
 }
 
 main "$@"

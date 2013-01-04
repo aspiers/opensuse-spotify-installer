@@ -11,30 +11,51 @@ Currently only openSUSE 12.2 is supported.  Patches to support others
 (e.g. [Factory](http://en.opensuse.org/Portal:Factory)) are very
 welcome!
 
-The vast majority of the credit and thanks for this script
-go to [Armin](http://community.spotify.com/t5/user/viewprofilepage/user-id/190504) on the Spotify community forums, who wrote the
-[original version](http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331).
-I have just added a small amount of polish.
+Credit and thanks for this installer go to:
 
-Thanks also to the relatively anonymous Spotify employees who donated
-free time to make the Linux client available.  *No* thanks go to
-Spotify middle/upper management for consistently refusing to invest
-the small amount of resources required to even acknowledge their
-Linux-based customers, let alone support them.
+* [Armin](http://community.spotify.com/t5/user/viewprofilepage/user-id/190504) on the Spotify community forums, who wrote the
+[original version](http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331).
+* [Marguerite Su](https://github.com/marguerite) who provided an initial `.spec` file and helped eventually convince me it was worth moving away from `alien`.
+
+Huge thanks also to the relatively anonymous Spotify employees such as
+[parbo](http://community.spotify.com/t5/user/viewprofilepage/user-id/23361)
+who have been donating some of their free time to make the Linux
+client available.  *No* thanks go to Spotify middle/upper management
+for consistently refusing to invest the small amount of resources
+required to even acknowledge their Linux-based customers, let alone
+support them.
 
 ## How to use
 
-1. [Download the script](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh)
-2. *(optional)* Read it to make sure it's not going to [pwn](http://en.wikipedia.org/wiki/Pwn) your computer.
-3. Make it executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
-4. Run it as the `root` user, e.g. from a terminal type `sudo ./install-spotify`, or `su`, enter the root password, and then `./install-spotify`
+Shortly I am hoping to provide this installer conveniently
+pre-packaged on [PackMan](http://packman.links2linux.org/).  Once you
+have the `spotify-installer` rpm installed, installing Spotify is as
+simple as running `install-spotify` as a non-root user.
+
+In the mean time however, you can use it as follows:
+
+1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
+2. Download [`spotify.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify.spec) and place it in `/usr/src/packages/SPECS`
+3. *(optional)* Read the source to make sure it's not going to [pwn](http://en.wikipedia.org/wiki/Pwn) your computer.
+4. Make the script executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
+5. Run it as a non-root user, e.g. from a terminal type `./install-spotify.sh`
 
 ## License
 
-I certainly cannot claim any copyright on this, since it is just
-Armin's version with a few tweaks applied.  He posted it without any
-copyright notice, so I unless I hear otherwise I'll assume it's in the
-public domain.
+This installer does *not* contain any material whatsoever copyrighted
+by Spotify.
+
+`install-spotify.sh` is a derivative of Armin's original version which
+he posted it without any copyright notice, so I unless I hear
+otherwise I'll assume it's in the public domain.
+
+`spotify.spec` is a derivative of Marguerite Su's original version,
+and the header seems to imply that it's MIT-licensed (since the
+pristine package the header refers to is either Spotify or
+non-existent, depending on how you look at it).
+
+Therefore I think it's fair to say the overall license is MIT (i.e.
+less ambiguously, the X11 license).
 
 ## Support, bugs, development etc.
 
@@ -114,8 +135,3 @@ fashion.  Fortunately github is totally mind-bendingly awesome at
 this, and free!  So let's use it!
 
 `</rant>`
-
-If we want to get fancy, we might even think about packaging up
-the installer into [a community repository](http://opensuse-community.org/Repositories)
-to get closer to that [one-click install](http://en.opensuse.org/openSUSE:One_Click_Install)
-dream ...
