@@ -11,7 +11,7 @@ SPOTIFY_BIN="/usr/bin/spotify"
 POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
 
 # Name of file residing within official Spotify repository above
-FNAME="spotify-client_0.8.4.103.g9cb177b.260-1"
+FNAME="spotify-client_0.8.8.323.gd143501.250-1"
 
 
 # ============================================================================ #
