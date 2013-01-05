@@ -117,7 +117,7 @@ cat >"$wrapper" <<'EOF'
 if [ -n "$SPOTIFY_CLEAN_CACHE" ]; then
     echo
     echo -n "Cleaning spotify cache ... "
-    rm -r ~/.cache/spotify
+    rm -rf ~/.cache/spotify
     echo "done."
 fi
 
