@@ -32,6 +32,9 @@ Requires:       libopenssl1_0_0
 Requires:       libpng12-0
 BuildRequires:  brp-check-suse
 %endif
+
+# not currently tested on Fedora or Mandriva, but leaving
+# these here in case anyone wants to step up and do it :)
 %if 0%{?fedora_version}
 Requires:       nss
 Requires:       nspr
@@ -43,6 +46,7 @@ Requires:       libnspr4
 Requires:       libopenssl1.0.0
 Conflicts:      libopenssl0.9.8
 %endif
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
