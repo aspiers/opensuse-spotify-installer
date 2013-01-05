@@ -16,7 +16,7 @@ Name:           spotify
 Version:        0.8.4.103
 Release:        g9cb177b.260
 License:        Any Commercial
-Summary:        A world of Music
+Summary:        Desktop client for Spotify streaming music service
 Url:            http://repository.spotify.com/pool/non-free/s/spotify
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
@@ -46,8 +46,16 @@ Conflicts:      libopenssl0.9.8
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
-Spotify is a new way to listen to music.
-Millions of tracks, any time you like. Just search for it in Spotify, then play it. Just help yourself to whatever you want, whenever you want it.
+Spotify is a "Freemium" proprietary, DRM-restricted digital music
+service that gives you access to millions of songs.
+
+It includes the following features:
+
+- Custom playlists
+- Last.fm integration
+- Customized radio dynamically generated to the user's tastes
+- Social media integration with Facebook and Twitter
+- 3rd-party applications integrated into the client
 
 %prep
 %setup -T -c %{name}-%{version}
