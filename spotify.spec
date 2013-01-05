@@ -1,7 +1,7 @@
 #
 # spec file for package spotify
 #
-# Copyright (c) 2012 Marguerite Su.
+# Copyright (c) 2012 Marguerite Su, Adam Spiers
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -12,7 +12,7 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-Name:           spotify
+Name:           spotify-client
 Version:        0.8.8.323.gd143501.250
 Release:        1
 License:        Any Commercial
@@ -20,17 +20,16 @@ Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
-Source0: %{name}-client_%{version}.%{release}-1_amd64.deb
+Source0: spotify-client_%{version}-%{release}_amd64.deb
 %else
-Source0: %{name}-client_%{version}.%{release}-1_i386.deb
+Source0: spotify-client_%{version}-%{release}_i386.deb
 %endif
 NoSource:       0
 %if 0%{?suse_version}
 Requires:       mozilla-nss
 Requires:       mozilla-nspr
-# can't use 0.9.8, it crashes spotify.
 Requires:       libopenssl1_0_0
-Conflicts:      libopenssl0_9_8
+BuildRequires:  brp-check-suse
 %endif
 %if 0%{?fedora_version}
 Requires:       nss
@@ -59,97 +58,132 @@ It includes the following features:
 
 %prep
 %setup -T -c %{name}-%{version}
-# drag deb here
-cp -r %{SOURCE0} ./
 # unpack deb
-ar -x *.deb
-# remove used deb
-rm -rf *.deb
+ar -x %{SOURCE0}
 # unpack data
 tar -xzf data.tar.gz
 # remove used files
-rm -rf *.gz
-rm -rf debian-binary
+rm {control,data}.tar.gz debian-binary
+
+%define _use_internal_dependency_generator 0
+%define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
+cat >%__find_requires <<'EOF'
+#!/bin/sh
+
+/usr/lib/rpm/find-requires | \
+    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
+            /lib\(crypto\|ssl\)\.so/d'
+EOF
+chmod +x %__find_requires
 
 %build
 # no need to build
 
 %install
-mv usr %{buildroot}
-# use wrapper instead
-rm -rf %{buildroot}%{_bindir}/%{name}
+mv opt %{buildroot}
 
-# fix desktop
-sed -i "s/AudioVideo/AudioVideo;/" %{buildroot}%{_datadir}/applications/%{name}.desktop
-sed -i "s/x-scheme-handler\/spotify/x-scheme-handler\/spotify;/" %{buildroot}%{_datadir}/applications/%{name}.desktop
+%define spotifydir /opt/spotify/spotify-client
+%define spotifylibdir %spotifydir/lib
 
-# fix doc
+# Fix spotify.desktop file:
+# - trailing semi-colon is required for fields with multiple values
+#   http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#basic-format
+desktop=%{buildroot}%{spotifydir}/spotify.desktop
+sed -i 's/^\(MimeType=.*\);?$/\1;/i ;
+        s/^Categories=/Categories=AudioVideo;Music;Player;Jukebox;/' $desktop
+
+# http://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25suse_update_desktop_file
+# http://en.opensuse.org/openSUSE:Packaging_desktop_menu_categories#Multimedia
+#%suse_update_desktop_file $desktop
+
 mkdir -p %{buildroot}%{_docdir}/%{name}
-mv %{buildroot}%{_datadir}/doc/%{name}-client/* %{buildroot}%{_docdir}/%{name}/
-rm -rf %{buildroot}%{_datadir}/doc/%{name}-client/
+mv usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
 
 # fix libraries
-mkdir -p %{buildroot}%{_libdir}/spotify/
-mv %{buildroot}%{_datadir}/spotify/libcef.so %{buildroot}%{_libdir}/spotify/
-ln -sf %{_libdir}/spotify/libcef.so %{buildroot}%{_datadir}/spotify/libcef.so
+mkdir -p %{buildroot}%{spotifylibdir}
+ln -sf ../libcef.so %{buildroot}%{spotifylibdir}/libcef.so
 
 # install binary wrapper
-pushd %{buildroot}%{_bindir}
-cat > %{name} << 'EOF'
+mkdir -p %{buildroot}%{_bindir}
+wrapper="%{buildroot}%{_bindir}/spotify"
+cat >"$wrapper" <<'EOF'
 #!/bin/sh
-if [ $?SPOTIFY_CLEAN_CACHE ]; then
+
+if [ -n "$SPOTIFY_CLEAN_CACHE" ]; then
     echo
-    echo Cleaning spotify cache
+    echo -n "Cleaning spotify cache ... "
     rm -r ~/.cache/spotify
-    echo
+    echo "done."
 fi
 
-cd /usr/share/spotify/
-LD_LIBRARY_PATH=%{_libdir}/spotify ./spotify "$*"
-
+cd %{spotifydir}
+LD_LIBRARY_PATH=%{spotifylibdir} ./spotify "$@"
 EOF
-chmod +x %{name}
-popd
+
+chmod +x "$wrapper"
 
 # link dependencies
-%ifarch x86_64
-ln -sf /lib64/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.0.9.8
-ln -sf /lib64/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.0.9.8
-%else
-ln -sf /lib/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.0.9.8
-ln -sf /lib/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.0.9.8
-%endif
-ln -sf %{_libdir}/libnss3.so %{buildroot}%{_libdir}/libnss3.so.1d
-ln -sf %{_libdir}/libnssutil3.so %{buildroot}%{_libdir}/libnssutil3.so.1d
-ln -sf %{_libdir}/libsmime3.so %{buildroot}%{_libdir}/libsmime3.so.1d
-ln -sf %{_libdir}/libplc4.so %{buildroot}%{_libdir}/libplc4.so.0d
-ln -sf %{_libdir}/libnspr4.so %{buildroot}%{_libdir}/libnspr4.so.0d
+mkdir -p %{buildroot}%{_libdir}
+ln -sf /%{_lib}/libcrypto.so.1.0.0 %{buildroot}%{spotifylibdir}/libcrypto.so.0.9.8
+ln -sf /%{_lib}/libssl.so.1.0.0 %{buildroot}%{spotifylibdir}/libssl.so.0.9.8
+libs=(
+    libnss3.so.1d \
+    libnssutil3.so.1d \
+    libsmime3.so.1d \
+    libplc4.so.0d \
+    libnspr4.so.0d
+)
+for lib in "${libs[@]}"; do
+    ln -sf %{_libdir}/${lib%.[01]d} %{buildroot}%{spotifylibdir}/$lib
+done
 
+# 0.8.8 has an errant RPATH which was accidentally left in
+# http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-8-for-GNU-Linux/m-p/238118/highlight/true#M1867
 export NO_BRP_CHECK_RPATH=true
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
 
-%postun -p /sbin/ldconfig
+cd %{spotifydir}
+./register.sh
+#%desktop_database_post
+#%icon_theme_cache_post
+
+%preun
+if [ "$1" = 0 ]; then
+    cd %{spotifydir}
+    ./unregister.sh
+fi
+
+%postun
+if [ "$1" = 0 ]; then
+    /sbin/ldconfig
+fi
+#%desktop_database_postun
+#%icon_theme_cache_postun
 
 %files
 %defattr(-,root,root)
+%spotifydir
 %doc %{_docdir}/%{name}
 %{_bindir}/spotify
-%{_libdir}/spotify/
-%{_libdir}/libcrypto.so.0.9.8
-%{_libdir}/libssl.so.0.9.8
-%{_libdir}/libnss3.so.1d
-%{_libdir}/libnssutil3.so.1d
-%{_libdir}/libsmime3.so.1d
-%{_libdir}/libplc4.so.0d
-%{_libdir}/libnspr4.so.0d
-%{_datadir}/applications/spotify.desktop
-%{_datadir}/spotify
-%{_datadir}/pixmaps/spotify-linux-512x512.png
+#%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
+- update to 0.8.8 (moved to /opt)
+- rename to spotify-client for consistency with original Debian package
+- use provided register.sh and unregister.sh
+- remove need to conflict with libopenssl0_9_8
+- fix automatically generated dependencies
+- fix XDG categories
+- move dedicated library directory to /opt/spotify/spotify-client/lib
+- remove spotify-linux-512x512.png since redistribution probably
+  violates Spotify copyright
+- fix SPOTIFY_CLEAN_CACHE test
+- fix passing of multiple arguments to spotify binary
+
 * Mon Aug 20 2012 Marguerite Su <i@marguerite.su> - 0.8.4.103.g9cb117b.260
 - initial version with Spotify App support.
 - use libopenssl1_0_0 instead of libopenssl0_9_8 to fix a crash and other linkings ready.
 - use wrapper to clear cache manually
-
