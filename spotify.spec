@@ -29,6 +29,7 @@ NoSource:       0
 Requires:       mozilla-nss
 Requires:       mozilla-nspr
 Requires:       libopenssl1_0_0
+Requires:       libpng12-0
 BuildRequires:  brp-check-suse
 %endif
 %if 0%{?fedora_version}
