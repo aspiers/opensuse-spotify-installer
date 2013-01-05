@@ -12,40 +12,36 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via 
-# http://forums.opensuse.org/english/get-technical-help-here/multimedia/443186-spotify-linux-version-opensuse.html
-#
-
 Name:           spotify
-Version:	0.8.4.103
-Release:	g9cb177b.260
-License:	Any Commercial
-Summary:	A world of Music
-Url:	http://repository.spotify.com/pool/non-free/s/spotify
-Group:	Productivity/Multimedia/Sound/Players
+Version:        0.8.4.103
+Release:        g9cb177b.260
+License:        Any Commercial
+Summary:        A world of Music
+Url:            http://repository.spotify.com/pool/non-free/s/spotify
+Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
 Source0: %{name}-client_%{version}.%{release}-1_amd64.deb
 %else
 Source0: %{name}-client_%{version}.%{release}-1_i386.deb
 %endif
-NoSource:	0
+NoSource:       0
 %if 0%{?suse_version}
-Requires:	mozilla-nss
-Requires:	mozilla-nspr
+Requires:       mozilla-nss
+Requires:       mozilla-nspr
 # can't use 0.9.8, it crashes spotify.
-Requires:	libopenssl1_0_0
-Conflicts:	libopenssl0_9_8
+Requires:       libopenssl1_0_0
+Conflicts:      libopenssl0_9_8
 %endif
 %if 0%{?fedora_version}
-Requires:	nss
-Requires:	nspr
-Requires:	openssl	>= 1.0.0
+Requires:       nss
+Requires:       nspr
+Requires:       openssl >= 1.0.0
 %endif
 %if 0%{?mandriva_version}
-Requires:	libnss3
-Requires:	libnspr4
-Requires:	libopenssl1.0.0
-Conflicts:	libopenssl0.9.8
+Requires:       libnss3
+Requires:       libnspr4
+Requires:       libopenssl1.0.0
+Conflicts:      libopenssl0.9.8
 %endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
@@ -94,10 +90,10 @@ pushd %{buildroot}%{_bindir}
 cat > %{name} << 'EOF'
 #!/bin/sh
 if [ $?SPOTIFY_CLEAN_CACHE ]; then
-   echo                 
-   echo Cleaning spotify cache
-   rm -r ~/.cache/spotify
-   echo                         
+    echo
+    echo Cleaning spotify cache
+    rm -r ~/.cache/spotify
+    echo
 fi
 
 cd /usr/share/spotify/
