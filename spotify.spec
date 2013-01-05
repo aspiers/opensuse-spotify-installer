@@ -13,8 +13,8 @@
 # published by the Open Source Initiative.
 
 Name:           spotify
-Version:        0.8.4.103
-Release:        g9cb177b.260
+Version:        0.8.8.323.gd143501.250
+Release:        1
 License:        Any Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
