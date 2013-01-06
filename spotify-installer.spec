@@ -14,6 +14,7 @@ Group:          Productivity/Multimedia/Sound/Players
 Source0:        spotify.spec
 Source1:        install-spotify.sh
 BuildArch:      noarch
+Recommends:     brp-check-suse
 
 %define specdir /usr/src/packages/SPECS
 
