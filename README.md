@@ -35,7 +35,7 @@ simple as running `install-spotify` as a non-root user.
 In the mean time however, you can use it as follows:
 
 1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
-2. Download [`spotify.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify.spec) and place it in `/usr/src/packages/SPECS`
+2. Download [`spotify-client.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify-client.spec) and place it in `/usr/src/packages/SPECS`
 3. *(optional)* Read the source to make sure it's not going to [pwn](http://en.wikipedia.org/wiki/Pwn) your computer.
 4. Make the script executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 5. Run it as a non-root user, e.g. from a terminal type `./install-spotify.sh`

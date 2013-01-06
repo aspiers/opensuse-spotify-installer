@@ -195,7 +195,7 @@ build_rpm () {
     echo "About to build $RPM_NAME rpm; please be patient ..."
     echo
     sleep 3
-    safe_run rpmbuild -ba "$RPM_SPEC_DIR/spotify.spec"
+    safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
 
     rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
 

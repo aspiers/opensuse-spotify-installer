@@ -11,7 +11,7 @@ License:        MIT
 Summary:        Installer for Spotify desktop client
 Url:            https://github.com/aspiers/opensuse-spotify-installer/
 Group:          Productivity/Multimedia/Sound/Players
-Source0:        spotify.spec
+Source0:        spotify-client.spec
 Source1:        install-spotify.sh
 BuildArch:      noarch
 Recommends:     brp-check-suse
@@ -35,7 +35,7 @@ The process is intended to be as user-friendly as possible.
 %build
 
 %install
-install -D -m 644 %{SOURCE0} %{buildroot}%{specdir}/spotify.spec
+install -D -m 644 %{SOURCE0} %{buildroot}%{specdir}/spotify-client.spec
 install -D -m 755 %{SOURCE1} %{buildroot}%{_bindir}/install-spotify
 
 %files
