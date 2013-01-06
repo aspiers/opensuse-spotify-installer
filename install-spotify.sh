@@ -32,15 +32,18 @@ main () {
     check_non_root
 
     if [ -z "$uninstall" ]; then
-        check_not_installed
-        safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
-        download_spotify_deb
+        if check_not_installed; then
+            safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
+            install_rpm_build
+            echo
+            download_spotify_deb
+            echo
+            build_rpm
+            echo
+            install_rpm
+        fi
         echo
-        install_dependencies
-        echo
-        build_rpm
-        echo
-        install_rpm
+        maybe_install_libmp3lame0
         echo
         progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
     else
@@ -119,7 +122,7 @@ It will use sudo for commands which need root.  Aborting."
     fi
 }
 
-install_dependencies () {
+maybe_install_libmp3lame0 () {
     if ! rpm -q libmp3lame0 >/dev/null; then
         warn "\
 WARNING: You do not have libmp3lame0 installed, so playback of local
@@ -128,14 +131,16 @@ Packman now?
 "
         echo -n "Type y/n> "
         read answer
-        echo
         case "$answer" in
             y|yes|Y|YES)
+                echo
                 install_libmp3lame0
                 ;;
         esac
     fi
+}
 
+install_rpm_build () {
     if rpm -q rpm-build >/dev/null; then
         progress "rpm-build is already installed."
     else
@@ -159,10 +164,13 @@ install_libmp3lame0 () {
 
 check_not_installed () {
     if rpm -q "$RPM_NAME" >/dev/null; then
-        fatal "$RPM_NAME is already installed!  If you want to re-install,
+        warn "$RPM_NAME is already installed!  If you want to re-install,
 please uninstall first via:
 
     $0 -u"
+        return 1
+    else
+        return 0
     fi
 }
 
