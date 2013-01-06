@@ -11,20 +11,6 @@ Currently only openSUSE 12.2 is supported.  Patches to support others
 (e.g. [Factory](http://en.opensuse.org/Portal:Factory)) are very
 welcome!
 
-Credit and thanks for this installer go to:
-
-* [Armin](http://community.spotify.com/t5/user/viewprofilepage/user-id/190504) on the Spotify community forums, who wrote the
-[original version](http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331).
-* [Marguerite Su](https://github.com/marguerite) who provided an initial `.spec` file and helped eventually convince me it was worth moving away from `alien`.
-
-Huge thanks also to the relatively anonymous Spotify employees such as
-[parbo](http://community.spotify.com/t5/user/viewprofilepage/user-id/23361)
-who have been donating some of their free time to make the Linux
-client available.  *No* thanks go to Spotify middle/upper management
-for consistently refusing to invest the small amount of resources
-required to even acknowledge their Linux-based customers, let alone
-support them.
-
 ## How to use
 
 Shortly I am hoping to provide this installer conveniently
@@ -75,6 +61,23 @@ There's a new browser-based Spotify player accessible via
 https://play.spotify.com/ or https://apps.facebook.com/get-spotify/
 
 However, [it does not seem to be generally available yet](http://howto.cnet.com/8301-11310_39-57551372-285/enable-spotifys-web-player-right-now/), and [is missing many features](http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-4-for-GNU-Linux/m-p/204364/highlight/true#M1687) compared to the standalone Linux client.
+
+## Credits and thanks
+
+This is not all my own work.  The following people deserve credit and
+thanks for some of the code in this installer:
+
+* [Armin](http://community.spotify.com/t5/user/viewprofilepage/user-id/190504) on the Spotify community forums, who wrote the
+[original version](http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331).
+* [Marguerite Su](https://github.com/marguerite) who provided an initial `.spec` file and helped eventually convince me it was worth moving away from `alien`.
+
+Huge thanks also to the relatively anonymous Spotify employees such as
+[parbo](http://community.spotify.com/t5/user/viewprofilepage/user-id/23361)
+who have been donating some of their free time to make the Linux
+client available.  *No* thanks go to Spotify middle/upper management
+for consistently refusing to invest the small amount of resources
+required to even acknowledge their Linux-based customers, let alone
+support them.
 
 ## Why is this script here on github?
 
