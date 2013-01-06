@@ -29,16 +29,16 @@ In the mean time however, you can use it as follows:
 ## License
 
 This installer does *not* contain any material whatsoever copyrighted
-by Spotify.
+by Spotify:
 
-`install-spotify.sh` is a derivative of Armin's original version which
-he posted it without any copyright notice, so I unless I hear
-otherwise I'll assume it's in the public domain.
-
-`spotify.spec` is a derivative of Marguerite Su's original version,
-and the header seems to imply that it's MIT-licensed (since the
-pristine package the header refers to is either Spotify or
-non-existent, depending on how you look at it).
+*   `install-spotify.sh` is a derivative of Armin's original version which
+    he posted it without any copyright notice, so I unless I hear
+    otherwise I'll assume it's in the public domain.
+*   `spotify-client.spec` is a derivative of Marguerite Su's original
+    `spotify.spec`, the header of which seems to imply that it's
+    MIT-licensed (since the pristine package the header refers to is
+    either Spotify or non-existent, depending on how you look at it).
+*   `spotify-installer.spec` is all my work.
 
 Therefore I think it's fair to say the overall license is MIT (i.e.
 less ambiguously, the X11 license).
