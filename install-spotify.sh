@@ -157,7 +157,7 @@ install_libmp3lame0 () {
     fi
 
     echo
-    safe_run sudo zypper -n in -l libmp3lame0
+    safe_run sudo zypper -n --gpg-auto-import-keys in -l libmp3lame0
     echo
     progress "Installed libmp3lame0."
 }
