@@ -45,6 +45,10 @@ less ambiguously, the X11 license).
 
 ## Support, bugs, development etc.
 
+Development lives at the home page:
+
+    https://github.com/aspiers/opensuse-spotify-installer/
+
 Please check the [issue tracker](https://github.com/aspiers/opensuse-spotify-installer/issues)
 for known issues, and if yours is not there, please submit it.
 I can't guarantee that I'll be able to fix it, or even respond,
