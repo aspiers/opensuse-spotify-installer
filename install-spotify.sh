@@ -13,7 +13,11 @@ POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
 #RPM_TOPDIR="/usr/src/packages"
 RPM_TOPDIR="$HOME/rpmbuild"
 RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
-RPM_SPEC_DIR="$RPM_TOPDIR/SPECS"
+# We prefer to keep the amount of code running as root to an absolute
+# minimum, but spotify-installer.spec can't install to a user's home
+# directory, so the spec file goes in /usr/src/packages even though
+# the rest of the rpmbuild stuff lives in $HOME.
+RPM_SPEC_DIR="/usr/src/packages/SPECS"
 
 # Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
