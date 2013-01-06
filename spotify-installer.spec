@@ -13,6 +13,8 @@ Url:            https://github.com/aspiers/opensuse-spotify-installer/
 Group:          Productivity/Multimedia/Sound/Players
 Source0:        spotify-client.spec
 Source1:        install-spotify.sh
+Source2:        README.md
+BuildRequires:  python-markdown
 BuildArch:      noarch
 Recommends:     brp-check-suse
 
@@ -33,15 +35,19 @@ The process is intended to be as user-friendly as possible.
 %prep
 
 %build
+markdown_py -o html5 %{SOURCE2} > README.html
 
 %install
-install -D -m 644 %{SOURCE0} %{buildroot}%{specdir}/spotify-client.spec
-install -D -m 755 %{SOURCE1} %{buildroot}%{_bindir}/install-spotify
+install -D -m 644 %{SOURCE0}  %{buildroot}%{specdir}/spotify-client.spec
+install -D -m 755 %{SOURCE1}  %{buildroot}%{_bindir}/install-spotify
+install -d                    %{buildroot}%{_docdir}/%{name}
+install -D -m 755 README.html %{buildroot}%{_docdir}/%{name}
 
 %files
 %defattr(-,root,root)
 %{specdir}/*
 %{_bindir}/*
+%doc README.html
 
 %changelog
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
