@@ -26,23 +26,6 @@ In the mean time however, you can use it as follows:
 4. Make the script executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 5. Run it as a non-root user, e.g. from a terminal type `./install-spotify.sh`
 
-## License
-
-This installer does *not* contain any material whatsoever copyrighted
-by Spotify:
-
-*   `install-spotify.sh` is a derivative of Armin's original version which
-    he posted it without any copyright notice, so I unless I hear
-    otherwise I'll assume it's in the public domain.
-*   `spotify-client.spec` is a derivative of Marguerite Su's original
-    `spotify.spec`, the header of which seems to imply that it's
-    MIT-licensed (since the pristine package the header refers to is
-    either Spotify or non-existent, depending on how you look at it).
-*   `spotify-installer.spec` is all my work.
-
-Therefore I think it's fair to say the overall license is MIT (i.e.
-less ambiguously, the X11 license).
-
 ## Support, bugs, development etc.
 
 Development lives at the home page:
@@ -82,6 +65,23 @@ client available.  *No* thanks go to Spotify middle/upper management
 for consistently refusing to invest the small amount of resources
 required to even acknowledge their Linux-based customers, let alone
 support them.
+
+## License
+
+This installer does *not* contain any material whatsoever copyrighted
+by Spotify:
+
+*   `install-spotify.sh` is a derivative of Armin's original version which
+    he posted it without any copyright notice, so I unless I hear
+    otherwise I'll assume it's in the public domain.
+*   `spotify-client.spec` is a derivative of Marguerite Su's original
+    `spotify.spec`, the header of which seems to imply that it's
+    MIT-licensed (since the pristine package the header refers to is
+    either Spotify or non-existent, depending on how you look at it).
+*   `spotify-installer.spec` is all my work.
+
+Therefore I think it's fair to say the overall license is MIT (i.e.
+less ambiguously, the X11 license).
 
 ## Why is this script here on github?
 
