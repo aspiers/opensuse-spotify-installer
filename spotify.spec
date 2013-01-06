@@ -15,7 +15,7 @@
 Name:           spotify-client
 Version:        0.8.8.323.gd143501.250
 Release:        1
-License:        Any Commercial
+License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
