@@ -31,6 +31,7 @@ Requires:       mozilla-nspr
 Requires:       libopenssl1_0_0
 Requires:       libpng12-0
 BuildRequires:  brp-check-suse
+Recommends:     libmp3lame0
 %endif
 
 # not currently tested on Fedora or Mandriva, but leaving
