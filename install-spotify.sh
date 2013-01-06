@@ -32,6 +32,7 @@ main () {
     check_non_root
 
     if [ -z "$uninstall" ]; then
+        check_not_installed
         safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
         download_spotify_deb
         echo
@@ -154,6 +155,15 @@ install_libmp3lame0 () {
     safe_run sudo zypper -n in -l libmp3lame0
     echo
     progress "Installed libmp3lame0."
+}
+
+check_not_installed () {
+    if rpm -q "$RPM_NAME" >/dev/null; then
+        fatal "$RPM_NAME is already installed!  If you want to re-install,
+please uninstall first via:
+
+    $0 -u"
+    fi
 }
 
 download_spotify_deb () {
