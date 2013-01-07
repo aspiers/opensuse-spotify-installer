@@ -50,5 +50,5 @@ install -D -m 755 README.html %{buildroot}%{_docdir}/%{name}
 %doc README.html
 
 %changelog
-* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
+* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org> - 0.8.8.323.gd143501.250-1
 - first version
