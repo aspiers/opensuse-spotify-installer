@@ -29,6 +29,9 @@ Alternatively you can skip PackMan and use it as follows:
 4. Make the script executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
 5. Run it as a non-root user, e.g. from a terminal type `./install-spotify.sh`
 
+The installer uses `sudo` for operations which require root privileges, so
+you may be prompted for a password during the install.
+
 ## Support, bugs, development etc.
 
 Development lives at the home page:
