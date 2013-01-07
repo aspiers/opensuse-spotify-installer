@@ -13,12 +13,15 @@ welcome!
 
 ## How to use
 
-Shortly I am hoping to provide this installer conveniently
-pre-packaged on [PackMan](http://packman.links2linux.org/).  Once you
-have the `spotify-installer` rpm installed, installing Spotify is as
-simple as running `install-spotify` as a non-root user.
+This installer is conveniently pre-packaged on
+[PackMan](http://packman.links2linux.org/).  The easiest way to use it
+is as follows:
 
-In the mean time however, you can use it as follows:
+1. [ensure you have the PackMan repository configured on your machine](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation),
+2. install the `spotify-installer` package from Packman
+3. Run `install-spotify` as a non-root user (e.g. from a terminal).
+
+Alternatively you can skip PackMan and use it as follows:
 
 1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
 2. Download [`spotify-client.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify-client.spec) and place it in `/usr/src/packages/SPECS`
