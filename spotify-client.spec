@@ -103,6 +103,13 @@ sed -i 's/^\(MimeType=.*\);?$/\1;/i ;
 
 mkdir -p %{buildroot}%{_docdir}/%{name}
 mv usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
+cat >%{buildroot}%{_docdir}/%{name}/README <<EOF
+This package was built by the openSUSE Spotify installer; see
+
+    https://github.com/aspiers/opensuse-spotify-installer
+
+for more information.
+EOF
 
 # fix libraries
 mkdir -p %{buildroot}%{spotifylibdir}
@@ -175,6 +182,9 @@ fi
 #%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
+- add README
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - update to 0.8.8 (moved to /opt)
 - rename to spotify-client for consistency with original Debian package
