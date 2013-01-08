@@ -47,13 +47,8 @@ Requires:       zenity
 Recommends:     libmp3lame0
 %endif
 
-# not currently tested on Fedora or Mandriva, but leaving
+# Not currently tested on Mandriva, but leaving
 # these here in case anyone wants to step up and do it :)
-%if 0%{?fedora_version}
-Requires:       nss
-Requires:       nspr
-Requires:       openssl >= 1.0.0
-%endif
 %if 0%{?mandriva_version}
 Requires:       libnss3
 Requires:       libnspr4
