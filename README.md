@@ -35,7 +35,7 @@ you may be prompted for a password during the install.
 
 Development lives at the home page:
 
-    https://github.com/aspiers/opensuse-spotify-installer/
+* [https://github.com/aspiers/opensuse-spotify-installer](https://github.com/aspiers/opensuse-spotify-installer)
 
 Please check the [issue tracker](https://github.com/aspiers/opensuse-spotify-installer/issues)
 for known issues, and if yours is not there, please submit it.
