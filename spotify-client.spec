@@ -84,8 +84,8 @@ cat >find-requires.sh <<'EOF'
 #!/bin/sh
 
 /usr/lib/rpm/find-requires | \
-    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
-            /lib\(crypto\|ssl\)\.so/d'
+    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/' \
+        -e 's/(OPENSSL_0.9.8)//g'
 EOF
 chmod +x find-requires.sh
 %define _use_internal_dependency_generator 0
