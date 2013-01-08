@@ -6,7 +6,7 @@
 
 Name:           spotify-installer
 Version:        0.8.8.323.gd143501.250
-Release:        1
+Release:        2
 License:        MIT
 Summary:        Installer for Spotify desktop client
 Url:            https://github.com/aspiers/opensuse-spotify-installer/
@@ -14,6 +14,7 @@ Group:          Productivity/Multimedia/Sound/Players
 Source0:        spotify-client.spec
 Source1:        install-spotify.sh
 Source2:        README.md
+Requires:       sudo
 BuildRequires:  python-markdown
 BuildArch:      noarch
 Recommends:     brp-check-suse
@@ -50,5 +51,9 @@ install -D -m 755 README.html %{buildroot}%{_docdir}/%{name}
 %doc README.html
 
 %changelog
+* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org> - 0.8.8.323.gd143501.250-2
+- update README
+- add Requires: sudo
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org> - 0.8.8.323.gd143501.250-1
 - first version
