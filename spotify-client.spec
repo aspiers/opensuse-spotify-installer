@@ -17,6 +17,11 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global github_repo https://github.com/leamas/spotify-make/archive/%{commit}
 
+# 0.8.8 has an errant RPATH which was accidentally left in
+# http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-8-for-GNU-Linux/m-p/238118
+%global  __arch_install_post  \
+         %( echo %{__arch_install_post} | sed '/check-rpaths/d' )
+
 Name:           spotify-client
 Version:        0.8.8.323.gd143501.250
 Release:        1
@@ -94,9 +99,6 @@ env version=%{version} file=$( basename %{SOURCE1} ) \
 
 
 %install
-# 0.8.8 has an errant RPATH which was accidentally left in
-# http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-8-for-GNU-Linux/m-p/238118/highlight/true#M1867
-export NO_BRP_CHECK_RPATH=true
 export PATH=$PATH:/sbin:/usr/sbin
 make install DESTDIR=%{buildroot}
 desktop-file-validate $(DESTDIR)%{_datadir}/applications/spotify.desktop
