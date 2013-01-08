@@ -17,9 +17,8 @@ This installer is conveniently pre-packaged on
 [PackMan](http://packman.links2linux.org/).  The easiest way to use it
 is as follows:
 
-1. [ensure you have the PackMan repository configured on your machine](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation),
-2. install the `spotify-installer` package from Packman
-3. Run `install-spotify` as a non-root user (e.g. from a terminal).
+1. Install the `spotify-installer` package from Packman via [1-click install](http://packman.links2linux.org/install/spotify-installer) (you can also find the button on [this page](http://packman.links2linux.org/package/spotify-installer)), or via [YaST and/or zypper](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation).
+2. Run `install-spotify` as a non-root user (e.g. from any terminal program).
 
 Alternatively you can skip PackMan and use it as follows:
 
