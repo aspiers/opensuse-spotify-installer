@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 #These refer to the installer, not the main package:
-%global commit      2a19e826a23987424220c8af341e2ae8ea2b87a6
+%global commit      4e5d213eddce1485f1562f1a927fbc8589a400b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global github_repo https://github.com/leamas/spotify-make/archive/%{commit}
 
