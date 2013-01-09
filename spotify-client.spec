@@ -22,6 +22,11 @@
 %global  __arch_install_post  \
          %( echo %{__arch_install_post} | sed '/check-rpaths/d' )
 
+%ifarch x86_64
+%global   req_64   ()(64bit)
+%endif
+
+
 Name:           spotify-client
 Version:        0.8.8.323.gd143501.250
 Release:        1
@@ -37,7 +42,6 @@ Source1: spotify-client_%{version}-%{release}_i386.deb
 %endif
 Source2:        README
 Source3:        spotify.sh
-Source4:        find-requires.sh
 NoSource:       0
 %if 0%{?suse_version}
 BuildRequires:  desktop-file-utils
@@ -52,6 +56,11 @@ BuildRequires:  mozilla-nspr
 
 Requires:       hicolor-icon-theme
 Requires:       zenity
+# Symlinked, not picked up by dep-checker (all 3)
+Requires:       libopenssl1_0_0%{?req_64}
+Requires:       mozilla-nss%{?req_64}
+Requires:       mozilla-nspr%{?req_64}
+
 Recommends:     libmp3lame0
 %endif
 
@@ -78,8 +87,18 @@ It includes the following features:
 - Social media integration with Facebook and Twitter
 - 3rd-party applications integrated into the client
 
-%define _use_internal_dependency_generator 0
-%define __find_requires %{SOURCE4}
+
+# Bundled, we should not Provide these. Using builtin filtering:
+# http://rpm.org/wiki/PackagerDocs/DependencyGenerator
+%global __provides_exclude_from  ^%{_libdir}/spotify-client/.*[.]so
+
+# Filter away the deps om bundled libs and those substituted
+# by symlinks and explicit Requires:.
+%global __requires_exclude                     ^libssl.so.0.9.8
+%global __requires_exclude %__requires_exclude|^libcrypto.so.0.9.8
+%global __requires_exclude %__requires_exclude|^libcef.so
+%global __requires_exclude %__requires_exclude|[.]so[.][0-2][a-f]
+
 
 %prep
 %setup -qn spotify-make-%{commit}
@@ -98,6 +117,9 @@ env version=%{version} file=$( basename %{SOURCE1} ) \
 export PATH=$PATH:/sbin:/usr/sbin
 make install DESTDIR=%{buildroot}
 desktop-file-validate %{buildroot}%{_datadir}/applications/spotify.desktop
+cd %{buildroot}%{_libdir}/spotify-client
+ln -sf /lib/libssl.so.1.0.0 libssl.so.0.9.8
+ln -sf /lib/libcrypto.so.1.0.0 libcrypto.so.0.9.8
 
 
 %post
