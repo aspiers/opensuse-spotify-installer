@@ -35,6 +35,9 @@ Source1: spotify-client_%{version}-%{release}_amd64.deb
 %else
 Source1: spotify-client_%{version}-%{release}_i386.deb
 %endif
+Source2:        README
+Source3:        find-requires.sh
+Source4:        spotify.sh
 NoSource:       0
 %if 0%{?suse_version}
 BuildRequires:  desktop-file-utils
@@ -48,7 +51,6 @@ BuildRequires:  mozilla-nss
 BuildRequires:  mozilla-nspr
 
 Requires:       hicolor-icon-theme
-Requires:       zenity
 Recommends:     libmp3lame0
 %endif
 
@@ -76,20 +78,15 @@ It includes the following features:
 - 3rd-party applications integrated into the client
 
 
+%define _use_internal_dependency_generator 0
+%define __find_requires %{SOURCE3}
+
+
 %prep
 %setup -qn spotify-make-%{commit}
 cp %{SOURCE1} .
-
-cat >find-requires.sh <<'EOF'
-#!/bin/sh
-
-/usr/lib/rpm/find-requires | \
-    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/' \
-        -e 's/(OPENSSL_0.9.8)//g'
-EOF
-chmod +x find-requires.sh
-%define _use_internal_dependency_generator 0
-%define __find_requires %_builddir/spotify-make-%{commit}/find-requires.sh
+cp %{SOURCE2} README 
+cp %{SOURCE4} spotify.bash  # Use the SUSE wrapper instead of upstream.
 
 
 %build
@@ -115,6 +112,7 @@ desktop-file-validate $(DESTDIR)%{_datadir}/applications/spotify.desktop
 
 %files
 %defattr(-,root,root)
+%doc README
 %doc opt/spotify/spotify-client/licenses.xhtml
 %doc opt/spotify/spotify-client/changelog
 %{_libdir}/spotify-client
