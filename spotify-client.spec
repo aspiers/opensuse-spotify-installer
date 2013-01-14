@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 #These refer to the installer, not the main package:
-%global commit      4e5d213eddce1485f1562f1a927fbc8589a400b8
+%global commit      ea006a89509a9f76f38047affc87aa33dfccd1ba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global github_repo https://github.com/leamas/spotify-make/archive/%{commit}
 
@@ -46,8 +46,9 @@ NoSource:       0
 %if 0%{?suse_version}
 BuildRequires:  desktop-file-utils
 BuildRequires:  binutils
-BuildRequires:  python-devel
 BuildRequires:  lsb-release
+BuildRequires:  python-devel
+BuildRequires:  update-desktop-files
 
 # The install script will resolve spotify deps against
 # these with symlinks if they are present during %install.
@@ -104,19 +105,17 @@ It includes the following features:
 %setup -qn spotify-make-%{commit}
 cp %{SOURCE1} .
 cp %{SOURCE2} README
-cp %{SOURCE3} spotify.bash  # Use the SUSE wrapper instead of upstream.
+cp %{SOURCE3} spotify.bash.in  # Use the SUSE wrapper instead of upstream.
 
 
 %build
-export PATH=$PATH:/sbin:/usr/sbin
-env version=%{version} file=$( basename %{SOURCE1} ) \
-    ./configure --prefix=/usr --libdir=%{_libdir} --local
+./configure --prefix=/usr --libdir=%{_libdir} --package=%{SOURCE1}
 
 
 %install
-export PATH=$PATH:/sbin:/usr/sbin
 make install DESTDIR=%{buildroot}
-desktop-file-validate %{buildroot}%{_datadir}/applications/spotify.desktop
+# http://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25suse_update_desktop_file
+%suse_update_desktop_file spotify
 cd %{buildroot}%{_libdir}/spotify-client
 ln -sf /lib/libssl.so.1.0.0 libssl.so.0.9.8
 ln -sf /lib/libcrypto.so.1.0.0 libcrypto.so.0.9.8
