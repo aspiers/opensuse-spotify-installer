@@ -33,6 +33,8 @@ License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
 Source0:        %{github_repo}/spotify-make-%{version}-%{shortcommit}.tar.gz
 %ifarch x86_64
 Source1: spotify-client_%{version}-%{release}_amd64.deb
@@ -42,7 +44,7 @@ Source1: spotify-client_%{version}-%{release}_i386.deb
 Source2:        pkg-bundled-README
 Source3:        spotify.sh
 NoSource:       0
-%if 0%{?suse_version}
+
 BuildRequires:  update-desktop-files
 BuildRequires:  binutils
 BuildRequires:  python-devel
@@ -61,23 +63,9 @@ Requires:       mozilla-nss%{?req_64}
 Requires:       mozilla-nspr%{?req_64}
 
 Recommends:     libmp3lame0
-%endif
-
-# not currently tested on Fedora or Mandriva, but leaving
-# these here in case anyone wants to step up and do it :)
-%if 0%{?fedora_version}
-Requires:       nss
-Requires:       nspr
-Requires:       openssl >= 1.0.0
-%endif
-%if 0%{?mandriva_version}
-Requires:       libnss3
-Requires:       libnspr4
-Requires:       libopenssl1.0.0
-Conflicts:      libopenssl0.9.8
-%endif
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
 
 %description
 Spotify is a "Freemium" proprietary, DRM-restricted digital music
