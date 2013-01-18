@@ -22,9 +22,6 @@
 %global  __arch_install_post  \
          %( echo %{__arch_install_post} | sed '/check-rpaths/d' )
 
-%ifarch x86_64
-%global   req_64   ()(64bit)
-%endif
 
 Name:           spotify-client
 Version:        0.8.8.323.gd143501.250
@@ -34,16 +31,19 @@ Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-
+ExclusiveArch:  i386 i586 i686 x86_64
 Source0:        %{github_repo}/spotify-make-%{version}-%{shortcommit}.tar.gz
+Source1:        spotify-client_%{version}-%{release}_amd64.deb
+Source2:        spotify-client_%{version}-%{release}_i386.deb
+Source3:        pkg-bundled-README
+Source4:        spotify.sh
+
 %ifarch x86_64
-Source1: spotify-client_%{version}-%{release}_amd64.deb
+%global         req_64      ()(64bit)
+%global         spotify_pkg %{SOURCE1}
 %else
-Source1: spotify-client_%{version}-%{release}_i386.deb
+%global         spotify_pkg %{SOURCE2}
 %endif
-Source2:        pkg-bundled-README
-Source3:        spotify.sh
-NoSource:       0
 
 BuildRequires:  update-desktop-files
 BuildRequires:  binutils
@@ -95,14 +95,12 @@ It includes the following features:
 
 %prep
 %setup -qn spotify-make-%{commit}
-cp %{SOURCE2} README
-cp %{SOURCE3} spotify.bash  # Use the SUSE wrapper instead of upstream.
+cp %{SOURCE3} README
+cp %{SOURCE4} spotify.bash.in  # Use the SUSE wrapper instead of upstream.
 
 
 %build
-export PATH=$PATH:/sbin:/usr/sbin
-env version=%{version} file=$( basename %{SOURCE1} ) \
-    ./configure --prefix=/usr --libdir=%{_libdir} --local
+./configure --prefix=/usr --libdir=%{_libdir} --package=%{spotify_pkg}
 
 
 %install
