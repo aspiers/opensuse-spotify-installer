@@ -24,7 +24,7 @@
 
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.0.133.gd18ed58.259
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -111,8 +111,8 @@ make install DESTDIR=%{buildroot}
 %suse_update_desktop_file spotify
 
 cd %{buildroot}%{_libdir}/spotify-client
-ln -sf /lib/libssl.so.1.0.0 libssl.so.0.9.8
-ln -sf /lib/libcrypto.so.1.0.0 libcrypto.so.0.9.8
+ln -sf %{_libdir}/libssl.so.1.0.0 libssl.so.0.9.8
+ln -sf %{_libdir}/libcrypto.so.1.0.0 libcrypto.so.0.9.8
 
 
 %post
@@ -138,6 +138,10 @@ ln -sf /lib/libcrypto.so.1.0.0 libcrypto.so.0.9.8
 
 
 %changelog
+* Fri May 24 2013 Alec Leamas <leamas.alec@nowhere.net> - 0.9.0.133.gd18ed58.259-1
+- Adapt to spotify-make
+- New upstream release
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - add README
 
