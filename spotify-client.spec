@@ -17,12 +17,6 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global github_repo https://github.com/leamas/spotify-make/archive/%{commit}
 
-# 0.8.8 has an errant RPATH which was accidentally left in
-# http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-8-for-GNU-Linux/m-p/238118
-%global  __arch_install_post  \
-         %( echo %{__arch_install_post} | sed '/check-rpaths/d' )
-
-
 Name:           spotify-client
 Version:        0.9.0.133.gd18ed58.259
 Release:        1
