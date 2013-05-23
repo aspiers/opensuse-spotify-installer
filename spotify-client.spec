@@ -36,6 +36,9 @@ Source1: spotify-client_%{version}-%{release}_amd64.deb
 %else
 Source1: spotify-client_%{version}-%{release}_i386.deb
 %endif
+Source2:        pkg-bundled-README
+Source3:        spotify.sh
+Source4:        find-requires.sh
 NoSource:       0
 %if 0%{?suse_version}
 BuildRequires:  update-desktop-files
@@ -81,20 +84,14 @@ It includes the following features:
 - Social media integration with Facebook and Twitter
 - 3rd-party applications integrated into the client
 
+%define _use_internal_dependency_generator 0
+%define __find_requires %{SOURCE4}
+
 
 %prep
 %setup -qn spotify-make-%{commit}
-
-cat >find-requires.sh <<'EOF'
-#!/bin/sh
-
-/usr/lib/rpm/find-requires | \
-    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
-            /lib\(crypto\|ssl\)\.so/d'
-EOF
-chmod +x find-requires.sh
-%define _use_internal_dependency_generator 0
-%define __find_requires %_builddir/spotify-make-%{commit}/find-requires.sh
+cp %{SOURCE2} README
+cp %{SOURCE3} spotify.bash  # Use the SUSE wrapper instead of upstream.
 
 
 %build
@@ -109,34 +106,6 @@ make install DESTDIR=%{buildroot}
 # http://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25suse_update_desktop_file
 # http://en.opensuse.org/openSUSE:Packaging_desktop_menu_categories#Multimedia
 %suse_update_desktop_file spotify
-
-cat >%{buildroot}%{_docdir}/%{name}/README <<EOF
-This package was built by the openSUSE Spotify installer; see
-
-    https://github.com/aspiers/opensuse-spotify-installer
-
-for more information.
-EOF
-
-
-# install binary wrapper
-mkdir -p %{buildroot}%{_bindir}
-wrapper="%{buildroot}%{_bindir}/spotify"
-cat >"$wrapper" <<'EOF'
-#!/bin/sh
-
-if [ -n "$SPOTIFY_CLEAN_CACHE" ]; then
-    echo
-    echo -n "Cleaning spotify cache ... "
-    rm -rf ~/.cache/spotify
-    echo "done."
-fi
-
-cd %{spotifydir}
-LD_LIBRARY_PATH=%{spotifylibdir} ./spotify "$@"
-EOF
-
-chmod +x "$wrapper"
 
 
 %post
