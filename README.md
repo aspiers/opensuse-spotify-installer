@@ -7,7 +7,7 @@ converting it to `.rpm` format, and then installing it along with some
 evil hacks to provide the necessary libraries where Spotify expects
 them to be.
 
-Currently only openSUSE 12.2 is supported.  Patches to support others
+Currently  openSUSE 12.2  and 12.3 is supported.  Patches to support others
 (e.g. [Factory](http://en.opensuse.org/Portal:Factory)) are very
 welcome!
 
@@ -22,11 +22,9 @@ is as follows:
 
 Alternatively you can skip PackMan and use it as follows:
 
-1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
-2. Download [`spotify-client.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify-client.spec) and place it in `/usr/src/packages/SPECS`
-3. *(optional)* Read the source to make sure it's not going to [pwn](http://en.wikipedia.org/wiki/Pwn) your computer.
-4. Make the script executable, e.g. from a terminal, type `chmod +x install-spotify.sh`
-5. Run it as a non-root user, e.g. from a terminal type `./install-spotify.sh`
+    $ repo=https://raw.github.com/aspiers/opensuse-spotify-installer/master
+    $ wget $repo/install-spotify.sh
+    $ bash install-spotify.sh
 
 The installer uses `sudo` for operations which require root privileges, so
 you may be prompted for a password during the install.
