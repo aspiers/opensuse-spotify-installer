@@ -2,53 +2,56 @@
 #
 # Automate installation of Spotify on openSUSE 12.2
 #
+# Will download and use stuff from the spotify-make and
+# opensuse-spotify-installer github repos. Set MAKE_TARBALL and
+# and/or INST_TARBALL to change location from the default
+#
 # Credits for original version go to arminw on spotify forums:
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
-SPOTIFY_BIN="/usr/bin/spotify"
 
-POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
+INST_REPO=https://github.com/aspiers/opensuse-spotify-installer/tarball/master
+INST_TARBALL=${INST_TARBALL:-$INST_REPO/opensuse-spotify-installer.tar.gz}
 
-#RPM_TOPDIR="/usr/src/packages"
-RPM_TOPDIR="$HOME/rpmbuild"
-RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
-# We prefer to keep the amount of code running as root to an absolute
-# minimum, but spotify-installer.spec can't install to a user's home
-# directory, so the spec file goes in /usr/src/packages even though
-# the rest of the rpmbuild stuff lives in $HOME.
-RPM_SPEC_DIR="/usr/src/packages/SPECS"
+MAKE_REPO=https://github.com/leamas/spotify-make/tarball/master
+MAKE_TARBALL=${MAKE_TARBALL:-$MAKE_REPO/spotify-make.tar.gz}
 
-# Name of file residing within official Spotify repository above
-RPM_NAME="spotify-client"
 VERSION="0.9.0.133.gd18ed58.259-1"
-BASENAME="${RPM_NAME}_$VERSION"
+
+RPM_NAME="spotify-client"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
+set -e
+
 main () {
     parse_args "$@"
-
     check_non_root
-
-    if [ -z "$uninstall" ]; then
-        if check_not_installed; then
-            safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
-            install_rpm_build
-            echo
-            download_spotify_deb
-            echo
-            build_rpm
-            echo
-            install_rpm
-        fi
-        echo
-        maybe_install_libmp3lame0
-        echo
-        progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
-    else
+    if [ -n "$uninstall" ]; then
         uninstall
+        exit 0
+    elif check_installed; then
+        exit 0
     fi
+
+    install_rpm_build
+    install_rpmdevtools
+    setup_build_env
+
+    SOURCES="$(rpm --eval %_sourcedir)"
+    progress "Downloading sources..."
+    download_installer "$SOURCES"
+    download_spotify_make "$SOURCES"
+    download_debs "$SOURCES"/leamas-spotify-make-* "$SOURCES"
+
+    install_builddeps "$SOURCES"
+    build_rpm "$SOURCES/$RPM_NAME.spec"
+    install_rpm
+    echo
+    maybe_install_libmp3lame0
+    echo
+    progress "Run spotify via /usr/bin/spotify or menu - happy listening!"
 }
 
 usage () {
@@ -95,10 +98,6 @@ parse_args () {
 
     if [ $# -gt 1 ]; then
         usage
-    fi
-
-    if [ -n "$1" ]; then
-        BASENAME=$1
     fi
 }
 
@@ -148,6 +147,55 @@ install_rpm_build () {
     fi
 }
 
+install_rpmdevtools () {
+    if rpm -q rpmdevtools >/dev/null; then
+        progress "rpmdevtools is already installed."
+        return
+    fi
+    
+    if ! zypper -n search rpmdevtools; then
+        if ! opensuse_release=$( awk '/^VERSION/{print $3}' /etc/SuSE-release ); then
+            fatal "Couldn't determine openSUSE version to add devel:tools repo"
+        fi
+        safe_run sudo zypper -n addrepo "http://download.opensuse.org/repositories/devel:/tools/openSUSE_${opensuse_release}/devel:tools.repo"
+    fi
+
+    safe_run sudo zypper -n install -lny rpmdevtools
+}
+
+setup_build_env() {
+    [ -w "$(rpm --eval %_sourcedir)" ] || {
+        progress "Installing personal build environment"
+        rpmdev-setuptree
+    }
+}
+
+download_installer() {
+    cd "$1"
+    rm -rf opensuse-spotify-installer-*
+    wget -nc -O spotify-installer.tar.gz "$INST_TARBALL" || :
+    tar xzf  spotify-installer.tar.gz
+    cp *-opensuse-spotify-installer-*/* .
+    rpmdev-spectool -g --source 0  spotify-client.spec
+    progress "Installer downloaded"
+}
+
+download_spotify_make() {
+    cd "$1"
+    rm -rf leamas-spotify-make-*
+    wget -nc -O spotify-make.tar.gz "$MAKE_TARBALL" || :
+    tar xzf spotify-make.tar.gz
+    progress "Spotify-make downloaded"
+}
+
+download_debs() {
+    cd "$1"
+    ./configure --user
+    make download
+    mv *.deb "$2"
+    progress "Spotify .deb files downloaded"
+}
+
 install_libmp3lame0 () {
     if safe_run zypper lr -d | grep -iq 'packman'; then
         progress "Packman repository is already configured - good :)"
@@ -162,62 +210,36 @@ install_libmp3lame0 () {
     progress "Installed libmp3lame0."
 }
 
-check_not_installed () {
+check_installed () {
     if rpm -q "$RPM_NAME" >/dev/null; then
         warn "$RPM_NAME is already installed!  If you want to re-install,
 please uninstall first via:
 
     $0 -u"
-        return 1
-    else
         return 0
+    else
+        return 1
     fi
 }
 
-download_spotify_deb () {
-    arch=$(arch)
-    if [ "$arch" == "x86_64" ]; then
-        deb=${BASENAME}_amd64.deb
-        rpmarch="x86_64"
-    elif [ "$arch" == "i686" ]; then
-        deb=${BASENAME}_i386.deb
-        rpmarch="i586"
-    else
-        fatal "
-Sorry, $arch architecture isn't supported.  If you think this is a
-mistake, please consider filing a bug at:
+rpm_path () {
+    rpmdir=$( rpm --eval %_rpmdir )
+    arch=$( LANG=C rpm --showrc | awk '/^build arch/ {print $4}' )
+    echo "$rpmdir/$arch/${RPM_NAME}-${VERSION}.$arch.rpm"
+}
 
-    $ISSUE_TRACKER_URL
-
-Aborting.
-"
-    fi
-
-    RPM_DIR="$RPM_TOPDIR/RPMS/$rpmarch"
-
-    dest="$RPM_SOURCE_DIR/$deb"
-    if [ ! -e "$dest" ]; then
-        echo "Downloading Spotify .deb package ..."
-        safe_run wget -O "$dest" "$POOL_URL/$deb"
-        progress ".deb downloaded."
-    else
-        progress "Spotify .deb package already exists:"
-        echo
-        echo "  ${dest/$HOME/~}"
-        echo
-        echo "Skipping download."
-    fi
+install_builddeps () {
+    cd "$1"
+    safe_run rpmbuild -bs --nodeps spotify-client.spec
+    srpm=$(rpm --eval %_srcrpmdir)/${RPM_NAME}-${VERSION}.nosrc.rpm
+    safe_run sudo zypper si -d $srpm  || :
 }
 
 build_rpm () {
-    echo "About to build $RPM_NAME rpm; please be patient ..."
-    echo
-    sleep 3
-    safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
-
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
-
-    if ! [ -e "$rpm" ]; then
+    spec=$1
+    progress "About to build $RPM_NAME rpm; please be patient ..."
+    rpmbuild -bb $spec
+    if ! [ -e "$( rpm_path )" ]; then
         fatal "
 rpmbuild failed :-(  Please consider filing a bug at:
 
@@ -231,7 +253,7 @@ rpmbuild failed :-(  Please consider filing a bug at:
 
 install_rpm () {
     echo "Installing Spotify from the rpm we just built ..."
-    safe_run sudo zypper -n in "$rpm"
+    safe_run sudo zypper -n in $( rpm_path )
 
     if ! rpm -q "$RPM_NAME" >/dev/null; then
         error "Failed to install $rpm :-("
