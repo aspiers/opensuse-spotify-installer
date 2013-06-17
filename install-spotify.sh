@@ -151,15 +151,11 @@ install_rpmdevtools () {
         progress "rpmdevtools is already installed."
         return
     fi
-    
-    if ! zypper -n search rpmdevtools; then
-        if ! opensuse_release=$( awk '/^VERSION/{print $3}' /etc/SuSE-release ); then
-            fatal "Couldn't determine openSUSE version to add devel:tools repo"
-        fi
-        safe_run sudo zypper -n addrepo "http://download.opensuse.org/repositories/devel:/tools/openSUSE_${opensuse_release}/devel:tools.repo"
-    fi
 
-    safe_run sudo zypper -n install -lny rpmdevtools
+    local release=$(lsb_release -sr)
+    safe_run sudo zypper -np \
+       "http://download.opensuse.org/repositories/devel:/tools/openSUSE_${release}/" \
+        install osc rpmdevtools
 }
 
 setup_build_env() {
