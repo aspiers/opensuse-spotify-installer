@@ -24,8 +24,6 @@ RPM_NAME="spotify-client"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
-set -e
-
 main () {
     parse_args "$@"
     check_non_root
@@ -274,4 +272,17 @@ uninstall () {
     fi
 }
 
+err_trap() {
+    trap '' EXIT ERR
+    trap - EXIT ERR
+    local err=$1
+    local line=$2
+    local command=$3
+    echo '-----'
+    echo "ERROR: line $line: Command \"$command\" exited with status: $err"
+    echo "Aborting"
+}
+
+trap 'err_trap $? $LINENO "$BASH_COMMAND"' ERR
+set -e -E
 main "$@"
