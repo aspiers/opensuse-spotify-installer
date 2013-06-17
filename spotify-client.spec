@@ -18,7 +18,7 @@
 %global github_repo https://github.com/leamas/spotify-make/archive/%{commit}
 
 Name:           spotify-client
-Version:        0.9.0.133.gd18ed58.259
+Version:        0.9.1.55.gbdd3b79.203
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
