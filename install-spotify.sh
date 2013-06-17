@@ -14,7 +14,8 @@
 INST_REPO=https://github.com/aspiers/opensuse-spotify-installer/tarball/master
 INST_TARBALL=${INST_TARBALL:-$INST_REPO/opensuse-spotify-installer.tar.gz}
 
-MAKE_REPO=https://github.com/leamas/spotify-make/tarball/master
+SPOTIFY_MAKE_SOURCE=leamas
+MAKE_REPO=https://github.com/$SPOTIFY_MAKE_SOURCE/spotify-make/tarball/master
 MAKE_TARBALL=${MAKE_TARBALL:-$MAKE_REPO/spotify-make.tar.gz}
 
 VERSION="0.9.0.133.gd18ed58.259-1"
@@ -43,7 +44,7 @@ main () {
     progress "Downloading sources..."
     download_installer "$SOURCES"
     download_spotify_make "$SOURCES"
-    download_debs "$SOURCES"/leamas-spotify-make-* "$SOURCES"
+    download_debs "$SOURCES/$SPOTIFY_MAKE_SOURCE"-spotify-make-* "$SOURCES"
 
     install_builddeps "$SOURCES"
     build_rpm "$SOURCES/$RPM_NAME.spec"
@@ -182,7 +183,7 @@ download_installer() {
 
 download_spotify_make() {
     cd "$1"
-    rm -rf leamas-spotify-make-*
+    rm -rf ${SPOTIFY_MAKE_SOURCE}-spotify-make-*
     wget -nc -O spotify-make.tar.gz "$MAKE_TARBALL" || :
     tar xzf spotify-make.tar.gz
     progress "Spotify-make downloaded"
