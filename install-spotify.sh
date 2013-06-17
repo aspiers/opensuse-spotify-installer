@@ -227,10 +227,11 @@ install_builddeps () {
 build_rpm () {
     spec=$1
     progress "About to build $RPM_NAME rpm; please be patient ..."
-    rpmbuild -bb $spec
+    QA_RPATHS=$((0x10|0x08)) rpmbuild -bb $spec
     if ! [ -e "$( rpm_path )" ]; then
         fatal "
-rpmbuild failed :-(  Please consider filing a bug at:
+rpmbuild failed: Can't find $( rpm_path )
+Please consider filing a bug at:
 
     $ISSUE_TRACKER_URL
 "
