@@ -220,8 +220,8 @@ rpm_path () {
 install_builddeps () {
     cd "$1"
     safe_run rpmbuild -bs --nodeps spotify-client.spec
-    srpm=$(rpm --eval %_srcrpmdir)/${RPM_NAME}-${VERSION}.nosrc.rpm
-    safe_run sudo zypper si -d $srpm  || :
+    srpm=$(rpm --eval %_srcrpmdir)/${RPM_NAME}-${VERSION}.src.rpm
+    sudo zypper si -d $srpm  || :
 }
 
 build_rpm () {
