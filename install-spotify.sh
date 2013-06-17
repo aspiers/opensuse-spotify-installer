@@ -18,7 +18,7 @@ SPOTIFY_MAKE_SOURCE=leamas
 MAKE_REPO=https://github.com/$SPOTIFY_MAKE_SOURCE/spotify-make/tarball/master
 MAKE_TARBALL=${MAKE_TARBALL:-$MAKE_REPO/spotify-make.tar.gz}
 
-VERSION="0.9.0.133.gd18ed58.259-1"
+VERSION="0.9.1.55.gbdd3b79.203"
 
 RPM_NAME="spotify-client"
 
