@@ -177,7 +177,7 @@ download_installer() {
 
 download_spotify_make() {
     cd "$1"
-    rm -rf ${SPOTIFY_MAKE_SOURCE}-spotify-make-*
+    rm -rf ${SPOTIFY_MAKE_SOURCE}-spotify-make-* spotify-make.tar.gz
     wget -nc -O spotify-make.tar.gz "$MAKE_TARBALL" || :
     tar xzf spotify-make.tar.gz
     progress "Spotify-make downloaded"
