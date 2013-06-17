@@ -186,8 +186,8 @@ download_spotify_make() {
 download_debs() {
     cd "$1"
     ./configure --user
-    make download
-    mv *.deb "$2"
+    make download-all
+    cp *.deb "$2"
     progress "Spotify .deb files downloaded"
 }
 
