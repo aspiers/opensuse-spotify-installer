@@ -192,16 +192,10 @@ download_debs() {
 }
 
 install_libmp3lame0 () {
-    if safe_run zypper lr -d | grep -iq 'packman'; then
-        progress "Packman repository is already configured - good :)"
-    else
-        safe_run sudo zypper ar -f http://packman.inode.at/suse/12.2/packman.repo
-        progress "Added Packman repository."
-    fi
-
-    echo
-    safe_run sudo zypper -n --gpg-auto-import-keys in -l libmp3lame0
-    echo
+    local release=$(lsb_release -sr)
+    safe_run sudo zypper -n --gpg-auto-import-keys \
+       -p "http://packman.inode.at/suse/${release}/Essentials" \
+       install -l libmp3lame0
     progress "Installed libmp3lame0."
 }
 
