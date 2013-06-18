@@ -1,0 +1,5 @@
+*.gz
+*.deb
+opt
+usr
+debian-binary
