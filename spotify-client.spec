@@ -39,6 +39,7 @@ Source4:        spotify.sh
 %global         spotify_pkg %{SOURCE2}
 %endif
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  update-desktop-files
 BuildRequires:  binutils
 BuildRequires:  python-devel

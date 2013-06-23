@@ -156,7 +156,7 @@ install_rpmdevtools () {
     fi
 
     local release=$(lsb_release -sr)
-    safe_run sudo zypper -np \
+    safe_run sudo zypper --gpg-auto-import-keys -np \
        "http://download.opensuse.org/repositories/devel:/tools/openSUSE_${release}/" \
         install osc rpmdevtools
 }
@@ -170,9 +170,9 @@ setup_build_env() {
 
 download_installer() {
     cd "$1"
-    rm -rf opensuse-spotify-installer-*
-    wget -qnc -O spotify-installer.tar.gz "$INST_TARBALL" || :
-    tar xzf  spotify-installer.tar.gz
+    rm -rf *-opensuse-spotify-installer-*
+    wget  -q "$INST_TARBALL" || :
+    tar xzf $( basename $INST_TARBALL )
     cp *-opensuse-spotify-installer-*/* .
     local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
     wget -qN ${src_url##* }
@@ -182,8 +182,8 @@ download_installer() {
 download_spotify_make() {
     cd "$1"
     rm -rf ${SPOTIFY_MAKE_SOURCE}-spotify-make-* spotify-make.tar.gz
-    wget -qnc -O spotify-make.tar.gz "$MAKE_TARBALL" || :
-    tar xzf spotify-make.tar.gz
+    wget --no-check-certificate -qnc "$MAKE_TARBALL" || :
+    tar xzf $( basename $MAKE_TARBALL )
     progress "Spotify-make downloaded"
 }
 
@@ -225,7 +225,7 @@ install_builddeps () {
     cd "$1"
     safe_run rpmbuild -bs --nodeps spotify-client.spec
     srpm=$(rpm --eval %_srcrpmdir)/${RPM_NAME}-${VERSION}.src.rpm
-    sudo zypper si -d $srpm  || :
+    sudo zypper -n install $( rpm -q --requires -p $srpm )
 }
 
 build_rpm () {
