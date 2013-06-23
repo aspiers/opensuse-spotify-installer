@@ -11,7 +11,7 @@
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
 
-INST_REPO=https://github.com/leamas/opensuse-spotify-installer/
+INST_REPO=https://github.com/leamas/opensuse-spotify-installer
 INST_TREEISH=${INST_TREEISH:-'devel'}
 commit=$( git rev-parse $INST_TREEISH )
 INST_TARBALL=${INST_TARBALL:-$INST_REPO/tarball/$commit/opensuse-spotify-installer.tar.gz}
@@ -169,12 +169,12 @@ setup_build_env() {
 
 download_installer() {
     cd "$1"
-    rm -rf opensuse-spotify-installer-*
-    wget -qnc -O spotify-installer.tar.gz "$INST_TARBALL" || :
-    tar xzf  spotify-installer.tar.gz
+    rm -rf *-opensuse-spotify-installer-*
+    wget  -q "$INST_TARBALL" || :
+    tar xzf $( basename $INST_TARBALL )
     cp *-opensuse-spotify-installer-*/* .
-    local source_url=$( rpmdev-spectool -l --source 0  spotify-client.spec )
-    wget -qN $source_url
+    local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
+    wget -qN ${src_url##* }
     progress "Installer downloaded"
 }
 
@@ -224,7 +224,7 @@ install_builddeps () {
     cd "$1"
     safe_run rpmbuild -bs --nodeps spotify-client.spec
     srpm=$(rpm --eval %_srcrpmdir)/${RPM_NAME}-${VERSION}.src.rpm
-    sudo zypper si -d $srpm  || :
+    sudo zypper -n install $( rpm -q --requires -p $srpm )
 }
 
 build_rpm () {
