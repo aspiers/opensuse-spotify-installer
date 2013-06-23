@@ -11,8 +11,10 @@
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
 
-INST_REPO=https://github.com/aspiers/opensuse-spotify-installer/tarball/master
-INST_TARBALL=${INST_TARBALL:-$INST_REPO/opensuse-spotify-installer.tar.gz}
+INST_REPO=https://github.com/leamas/opensuse-spotify-installer/
+INST_TREEISH=${INST_TREEISH:-'devel'}
+commit=$( git rev-parse $INST_TREEISH )
+INST_TARBALL=${INST_TARBALL:-$INST_REPO/tarball/$commit/opensuse-spotify-installer.tar.gz}
 
 SPOTIFY_MAKE_SOURCE=leamas
 MAKE_REPO=https://github.com/$SPOTIFY_MAKE_SOURCE/spotify-make/tarball/master
@@ -171,15 +173,16 @@ download_installer() {
     wget -qnc -O spotify-installer.tar.gz "$INST_TARBALL" || :
     tar xzf  spotify-installer.tar.gz
     cp *-opensuse-spotify-installer-*/* .
-    rpmdev-spectool -g --source 0  spotify-client.spec
+    local source_url=$( rpmdev-spectool -l --source 0  spotify-client.spec )
+    wget -qN $source_url
     progress "Installer downloaded"
 }
 
 download_spotify_make() {
     cd "$1"
     rm -rf ${SPOTIFY_MAKE_SOURCE}-spotify-make-* spotify-make.tar.gz
-    wget -qnc -O spotify-make.tar.gz "$MAKE_TARBALL" || :
-    tar xzf spotify-make.tar.gz
+    wget --no-check-certificate -qnc "$MAKE_TARBALL" || :
+    tar xzf $( basename $MAKE_TARBALL )
     progress "Spotify-make downloaded"
 }
 
