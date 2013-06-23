@@ -3,16 +3,19 @@
 # Automate installation of Spotify on openSUSE 12.2
 #
 # Will download and use stuff from the spotify-make and
-# opensuse-spotify-installer github repos. Set MAKE_TARBALL and
-# and/or INST_TARBALL to change location from the default
+# opensuse-spotify-installer github repos. Set MAKE_TARBALL and/or
+# INST_TARBALL/INST_TREEISH/INST_REPO  to change location from the
+# default
 #
 # Credits for original version go to arminw on spotify forums:
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
 
-INST_REPO=https://github.com/aspiers/opensuse-spotify-installer/tarball/master
-INST_TARBALL=${INST_TARBALL:-$INST_REPO/opensuse-spotify-installer.tar.gz}
+INST_REPO=${INST_REPO:-'https://github.com/leamas/opensuse-spotify-installer'}
+INST_TREEISH=${INST_TREEISH:-'devel'}
+commit=$( git rev-parse $INST_TREEISH )
+INST_TARBALL=${INST_TARBALL:-$INST_REPO/tarball/$commit/opensuse-spotify-installer.tar.gz}
 
 SPOTIFY_MAKE_SOURCE=leamas
 MAKE_REPO=https://github.com/$SPOTIFY_MAKE_SOURCE/spotify-make/tarball/master
@@ -171,7 +174,8 @@ download_installer() {
     wget -qnc -O spotify-installer.tar.gz "$INST_TARBALL" || :
     tar xzf  spotify-installer.tar.gz
     cp *-opensuse-spotify-installer-*/* .
-    rpmdev-spectool -g --source 0  spotify-client.spec
+    local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
+    wget -qN ${src_url##* }
     progress "Installer downloaded"
 }
 
