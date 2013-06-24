@@ -155,7 +155,7 @@ install_rpmdevtools () {
     fi
 
     local release=$(lsb_release -sr)
-    safe_run sudo zypper -np \
+    safe_run sudo zypper --gpg-auto-import-keys -np \
        "http://download.opensuse.org/repositories/devel:/tools/openSUSE_${release}/" \
         install osc rpmdevtools
 }
