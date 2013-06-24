@@ -232,6 +232,7 @@ build_rpm () {
     spec=$1
     progress "About to build $RPM_NAME rpm; please be patient ..."
     export QA_RPATHS=$(( 0x10 | 0x08 ))
+    export NO_BRP_CHECK_RPATH='true'
     rpmbuild  --quiet -bb $spec || :
     if ! [ -e "$( rpm_path )" ]; then
         fatal "
