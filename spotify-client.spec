@@ -43,6 +43,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  binutils
 BuildRequires:  python-devel
 BuildRequires:  lsb-release
+BuildRequires:  update-desktop-files
 
 # The install script will resolve spotify deps against
 # these with symlinks if they are present during %%install.
