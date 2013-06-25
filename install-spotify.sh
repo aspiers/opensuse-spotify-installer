@@ -171,11 +171,11 @@ setup_build_env() {
 download_installer() {
     cd "$1"
     rm -rf *-opensuse-spotify-installer-*
-    wget  -q "$INST_TARBALL" || :
+    wget  -q --no-check-certificate "$INST_TARBALL" || :
     tar xzf $( basename $INST_TARBALL )
     cp *-opensuse-spotify-installer-*/* .
     local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
-    wget -qN ${src_url##* }
+    wget -qN --no-check-certificate ${src_url##* }
     progress "Installer downloaded"
 }
 
@@ -231,7 +231,8 @@ install_builddeps () {
 build_rpm () {
     spec=$1
     progress "About to build $RPM_NAME rpm; please be patient ..."
-    QA_RPATHS=$((0x10|0x08)) rpmbuild --quiet -bb $spec
+    export QA_RPATHS=$(( 0x10 | 0x08 ))
+    rpmbuild  --quiet -bb $spec || :
     if ! [ -e "$( rpm_path )" ]; then
         fatal "
 rpmbuild failed: Can't find $( rpm_path )
