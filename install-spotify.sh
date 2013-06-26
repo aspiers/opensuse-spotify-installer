@@ -142,7 +142,7 @@ Packman now?
 }
 
 install_rpm_build () {
-    if rpm -q rpm-build >/dev/null; then
+    if  which rpmbuild &>/dev/null; then
         progress "rpm-build is already installed."
     else
         safe_run sudo zypper -n install -lny rpm-build
