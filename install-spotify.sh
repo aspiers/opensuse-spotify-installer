@@ -38,6 +38,7 @@ main () {
     fi
 
     install_rpm_build
+    install_make
     install_rpmdevtools
     setup_build_env
 
@@ -146,6 +147,14 @@ install_rpm_build () {
         progress "rpm-build is already installed."
     else
         safe_run sudo zypper -n install -lny rpm-build
+    fi
+}
+
+install_make () {
+    if  which make &>/dev/null; then
+        progress "make is already installed."
+    else
+        safe_run sudo zypper -n install -lny make
     fi
 }
 
