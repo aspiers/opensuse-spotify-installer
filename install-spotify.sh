@@ -13,7 +13,7 @@
 
 
 INST_REPO=${INST_REPO:-'https://github.com/leamas/opensuse-spotify-installer'}
-INST_TREEISH=${INST_TREEISH:-'devel'}
+INST_TREEISH=${INST_TREEISH:-'master'}
 commit=$( git rev-parse $INST_TREEISH )
 INST_TARBALL=${INST_TARBALL:-$INST_REPO/tarball/$commit/opensuse-spotify-installer.tar.gz}
 
