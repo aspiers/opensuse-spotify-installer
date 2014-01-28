@@ -40,6 +40,7 @@ Source4:        spotify.sh
 %endif
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  update-desktop-files
 BuildRequires:  binutils
 BuildRequires:  python-devel
 BuildRequires:  lsb-release
@@ -49,6 +50,7 @@ BuildRequires:  update-desktop-files
 # these with symlinks if they are present during %%install.
 BuildRequires:  mozilla-nss
 BuildRequires:  mozilla-nspr
+BuildRequires:  libopenssl1_0_0
 
 Requires:       hicolor-icon-theme
 Requires:       zenity
@@ -87,7 +89,6 @@ It includes the following features:
 %global __requires_exclude %__requires_exclude|[.]so[.][0-2][a-f]
 
 
-
 %prep
 %setup -qn spotify-make-%{commit}
 cp %{SOURCE3} README
@@ -106,8 +107,8 @@ make install DESTDIR=%{buildroot}
 %suse_update_desktop_file spotify
 
 cd %{buildroot}%{_libdir}/spotify-client
-ln -sf %{_libdir}/libssl.so.1.0.0 libssl.so.0.9.8
-ln -sf %{_libdir}/libcrypto.so.1.0.0 libcrypto.so.0.9.8
+ln -sf /%{_lib}/libssl.so.1.0.0 libssl.so.0.9.8
+ln -sf /%{_lib}/libcrypto.so.1.0.0 libcrypto.so.0.9.8
 
 
 %post

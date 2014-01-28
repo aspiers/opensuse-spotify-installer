@@ -3,17 +3,18 @@
 # Automate installation of Spotify on openSUSE 12.2
 #
 # Will download and use stuff from the spotify-make and
-# opensuse-spotify-installer github repos. Set MAKE_TARBALL and
-# and/or INST_TARBALL to change location from the default
+# opensuse-spotify-installer github repos. Set MAKE_TARBALL and/or
+# INST_TARBALL/INST_TREEISH/INST_REPO  to change location from the
+# default
 #
 # Credits for original version go to arminw on spotify forums:
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
 
-INST_REPO=https://github.com/leamas/opensuse-spotify-installer
-INST_TREEISH=${INST_TREEISH:-'devel'}
-commit=$( git rev-parse $INST_TREEISH )
+INST_REPO=${INST_REPO:-'https://github.com/leamas/opensuse-spotify-installer'}
+INST_TREEISH=${INST_TREEISH:-'master'}
+commit=$( git rev-parse $INST_TREEISH 2>/dev/null ) || commit=$INST_TREEISH
 INST_TARBALL=${INST_TARBALL:-$INST_REPO/tarball/$commit/opensuse-spotify-installer.tar.gz}
 
 SPOTIFY_MAKE_SOURCE=leamas
@@ -37,6 +38,7 @@ main () {
     fi
 
     install_rpm_build
+    install_make
     install_rpmdevtools
     setup_build_env
 
@@ -141,10 +143,18 @@ Packman now?
 }
 
 install_rpm_build () {
-    if rpm -q rpm-build >/dev/null; then
+    if  which rpmbuild &>/dev/null; then
         progress "rpm-build is already installed."
     else
         safe_run sudo zypper -n install -lny rpm-build
+    fi
+}
+
+install_make () {
+    if  which make &>/dev/null; then
+        progress "make is already installed."
+    else
+        safe_run sudo zypper -n install -lny make
     fi
 }
 
@@ -170,11 +180,19 @@ setup_build_env() {
 download_installer() {
     cd "$1"
     rm -rf *-opensuse-spotify-installer-*
+<<<<<<< HEAD
     wget  -q "$INST_TARBALL" || :
     tar xzf $( basename $INST_TARBALL )
     cp *-opensuse-spotify-installer-*/* .
     local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
     wget -qN ${src_url##* }
+=======
+    wget  -q --no-check-certificate "$INST_TARBALL" || :
+    tar xzf $( basename $INST_TARBALL )
+    cp *-opensuse-spotify-installer-*/* .
+    local src_url=$( rpmdev-spectool -l -s 0 spotify-client.spec )
+    wget -qN --no-check-certificate ${src_url##* }
+>>>>>>> cc95479b0931234f4dcfa44f50596178e811a1a4
     progress "Installer downloaded"
 }
 
@@ -230,7 +248,9 @@ install_builddeps () {
 build_rpm () {
     spec=$1
     progress "About to build $RPM_NAME rpm; please be patient ..."
-    QA_RPATHS=$((0x10|0x08)) rpmbuild --quiet -bb $spec
+    export QA_RPATHS=$(( 0x10 | 0x08 ))
+    export NO_BRP_CHECK_RPATH='true'
+    rpmbuild  --quiet -bb $spec || :
     if ! [ -e "$( rpm_path )" ]; then
         fatal "
 rpmbuild failed: Can't find $( rpm_path )
