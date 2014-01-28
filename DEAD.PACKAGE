@@ -1,0 +1,6 @@
+This package is dead since I have not been able to merge it
+with upstream and don't intend to maintain it. Older revisions
+might possibly contains something useful; doubt it, though.
+
+For now, use https://github.com/leamas/spotify-make to install
+spotify on suse/opensuse.
