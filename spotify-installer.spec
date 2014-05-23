@@ -5,7 +5,7 @@
 #
 
 Name:           spotify-installer
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.10.17.g4129e1c.78
 Release:        2
 License:        MIT
 Summary:        Installer for Spotify desktop client
