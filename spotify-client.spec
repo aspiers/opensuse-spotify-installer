@@ -13,11 +13,11 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.10.17.g4129e1c.78
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
-Url:            http://www.spotify.com/download/previews/
+Url:            http://repository.spotify.com/pool/non-free/s/spotify/
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
 Source0: spotify-client_%{version}-%{release}_amd64.deb
@@ -30,6 +30,7 @@ Requires:       mozilla-nss
 Requires:       mozilla-nspr
 Requires:       libopenssl1_0_0
 Requires:       libpng12-0
+Requires:       libudev0
 Recommends:     libmp3lame0
 %endif
 
@@ -62,7 +63,7 @@ It includes the following features:
 - 3rd-party applications integrated into the client
 
 %prep
-%setup -T -c %{name}-%{version}
+%setup -T -c %{name}-%{version}-%{release}
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
@@ -113,7 +114,7 @@ EOF
 
 # fix libraries
 mkdir -p %{buildroot}%{spotifylibdir}
-ln -sf ../libcef.so %{buildroot}%{spotifylibdir}/libcef.so
+ln -sf ../Data/libcef.so %{buildroot}%{spotifylibdir}/libcef.so
 
 # install binary wrapper
 mkdir -p %{buildroot}%{_bindir}
