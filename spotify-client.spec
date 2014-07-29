@@ -185,29 +185,3 @@ fi
 * Tue Jul 29 2014 Mateusz Mielczarek <sysek@outlook.com>
 - update spotify to 0.9.11.27.g2b1a638.81
 
-* Fri Mar 21 2014 Stefan Botter <obs@botter.cc>
-- fix version number
-
-* Thu Jul 18 2013 Stefan Botter <obs@botter.cc>
-- update to 0.9.1, fix PM-78
-
-* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
-- add README
-
-* Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
-- update to 0.8.8 (moved to /opt)
-- rename to spotify-client for consistency with original Debian package
-- use provided register.sh and unregister.sh
-- remove need to conflict with libopenssl0_9_8
-- fix automatically generated dependencies
-- fix XDG categories
-- move dedicated library directory to /opt/spotify/spotify-client/lib
-- remove spotify-linux-512x512.png since redistribution probably
-  violates Spotify copyright
-- fix SPOTIFY_CLEAN_CACHE test
-- fix passing of multiple arguments to spotify binary
-
-* Mon Aug 20 2012 Marguerite Su <i@marguerite.su> - 0.8.4.103.g9cb117b.260
-- initial version with Spotify App support.
-- use libopenssl1_0_0 instead of libopenssl0_9_8 to fix a crash and other linkings ready.
-- use wrapper to clear cache manually
