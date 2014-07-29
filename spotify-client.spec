@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.11.27.g2b1a638.81
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -62,7 +62,7 @@ It includes the following features:
 - 3rd-party applications integrated into the client
 
 %prep
-%setup -T -c %{name}-%{version}
+%setup -T -c %{name}-0.9.11.27.g2b1a638.81-1
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
@@ -182,6 +182,15 @@ fi
 #%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Tue Jul 29 2014 Mateusz Mielczarek <sysek@outlook.com>
+- update spotify to 0.9.11.27.g2b1a638.81
+
+* Fri Mar 21 2014 Stefan Botter <obs@botter.cc>
+- fix version number
+
+* Thu Jul 18 2013 Stefan Botter <obs@botter.cc>
+- update to 0.9.1, fix PM-78
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - add README
 
