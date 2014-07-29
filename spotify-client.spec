@@ -62,7 +62,7 @@ It includes the following features:
 - 3rd-party applications integrated into the client
 
 %prep
-%setup -T -c %{name}-0.9.11.27.g2b1a638.81-1
+%setup -T -c %{name}-%{version}
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
