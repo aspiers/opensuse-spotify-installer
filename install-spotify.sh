@@ -21,8 +21,10 @@ RPM_SPEC_DIR="/usr/src/packages/SPECS"
 
 # Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
-VERSION="0.8.8.323.gd143501.250-1"
-BASENAME="${RPM_NAME}_$VERSION"
+RPM_RELEASE="2"
+DEB_RELEASE="1"
+VERSION="0.8.8.323.gd143501.250"
+BASENAME="${RPM_NAME}_${VERSION}-${DEB_RELEASE}"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
@@ -213,9 +215,12 @@ build_rpm () {
     echo "About to build $RPM_NAME rpm; please be patient ..."
     echo
     sleep 3
+    safe_run sed -e "s/@SPOTIFY_VERSION@/${VERSION}/" \
+                 -e "s/@SPOTIFY_RELEASE@/${RPM_RELEASE}/" \
+                 "${RPM_NAME}.spec" | sudo sh -c "cat > $RPM_SPEC_DIR/${RPM_NAME}.spec"
     safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
 
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RPM_RELEASE}.$rpmarch.rpm"
 
     if ! [ -e "$rpm" ]; then
         fatal "
