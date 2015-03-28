@@ -23,7 +23,7 @@ RPM_SPEC_DIR="/usr/src/packages/SPECS"
 RPM_NAME="spotify-client"
 RPM_RELEASE="1"
 DEB_RELEASE="1"
-VERSION="0.9.11.27.g2b1a638.81"
+VERSION="0.9.17.1.g9b85d43.7"
 BASENAME="${RPM_NAME}_${VERSION}-${DEB_RELEASE}"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
