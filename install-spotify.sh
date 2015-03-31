@@ -17,11 +17,11 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 # minimum, but spotify-installer.spec can't install to a user's home
 # directory, so the spec file goes in /usr/src/packages even though
 # the rest of the rpmbuild stuff lives in $HOME.
-RPM_SPEC_DIR="/usr/src/packages/SPECS"
+RPM_SPEC_DIR="."
 
 # Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
-VERSION="0.8.8.323.gd143501.250-1"
+VERSION="0.9.17.1.g9b85d43.7-1"
 BASENAME="${RPM_NAME}_$VERSION"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
@@ -231,7 +231,7 @@ rpmbuild failed :-(  Please consider filing a bug at:
 
 install_rpm () {
     echo "Installing Spotify from the rpm we just built ..."
-    safe_run sudo zypper -n in "$rpm"
+    safe_run sudo zypper in "$rpm"
 
     if ! rpm -q "$RPM_NAME" >/dev/null; then
         error "Failed to install $rpm :-("

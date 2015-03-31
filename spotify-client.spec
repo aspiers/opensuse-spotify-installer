@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.17.1.g9b85d43.7
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -67,9 +67,9 @@ It includes the following features:
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
-tar -xzf data.tar.gz
+tar -xf data.tar.xz
 # remove used files
-rm {control,data}.tar.gz debian-binary
+rm {control.tar.gz,data.tar.xz} debian-binary
 
 %define _use_internal_dependency_generator 0
 %define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
@@ -78,7 +78,7 @@ cat >%__find_requires <<'EOF'
 
 /usr/lib/rpm/find-requires | \
     sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
-            /lib\(crypto\|ssl\)\.so/d'
+            /lib\(crypto\|ssl\|gcrypt\)\.so/d'
 EOF
 chmod +x %__find_requires
 
@@ -114,7 +114,7 @@ EOF
 
 # fix libraries
 mkdir -p %{buildroot}%{spotifylibdir}
-ln -sf ../libcef.so %{buildroot}%{spotifylibdir}/libcef.so
+ln -sf ../Data/libcef.so %{buildroot}%{spotifylibdir}/libcef.so
 
 # install binary wrapper
 mkdir -p %{buildroot}%{_bindir}
