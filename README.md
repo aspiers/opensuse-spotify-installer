@@ -33,20 +33,7 @@ you may be prompted for a password during the install.
 
 ## Support, bugs, development etc.
 
-Development lives at the home page:
-
-* [https://github.com/aspiers/opensuse-spotify-installer](https://github.com/aspiers/opensuse-spotify-installer)
-
-Please check the [issue tracker](https://github.com/aspiers/opensuse-spotify-installer/issues)
-for known issues, and if yours is not there, please submit it.
-I can't guarantee that I'll be able to fix it, or even respond,
-but I'll try, and even if I can't help, this is github, so anyone else
-can potentially help you out too.
-
-Even better, if you know how to fix a problem with the script, please
-[fork this repository](https://github.com/aspiers/opensuse-spotify-installer/fork_select),
-commit your fix (here are [some hints](http://blog.adamspiers.org/2012/11/10/7-principles-for-contributing-patches-to-software-projects/)),
-and then send me a [pull request](https://help.github.com/articles/using-pull-requests)!
+Please see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Why not just use the new web-based player?
 
