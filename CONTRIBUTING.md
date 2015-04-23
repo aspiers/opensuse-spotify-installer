@@ -23,7 +23,7 @@ Even better, if you know how to fix an existing issue, and you have
 checked that
 [there is not already a pull request addressing it](https://github.com/aspiers/opensuse-spotify-installer/pulls),
 please
-[fork this repository](https://github.com/aspiers/opensuse-spotify-installer/fork_select),
+[fork this repository](https://github.com/aspiers/opensuse-spotify-installer/fork),
 commit your fix, and then send me a
 [pull request](https://help.github.com/articles/using-pull-requests)!
 
