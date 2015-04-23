@@ -7,9 +7,20 @@ converting it to `.rpm` format, and then installing it along with some
 evil hacks to provide the necessary libraries where Spotify expects
 them to be.
 
-Currently only openSUSE 12.2 is supported.  Patches to support others
-(e.g. [Factory](http://en.opensuse.org/Portal:Factory)) are very
-welcome!
+## Current status
+
+Currently
+[this code is broken](https://github.com/aspiers/opensuse-spotify-installer/issues),
+however
+[work is underway to fix it](https://github.com/aspiers/opensuse-spotify-installer/pull/37).
+In the mean time, you may have luck with the PackMan installer which
+is based on a patched version of this code - see below for details.
+If that fails, you could also try
+[`spotify-make`](https://github.com/leamas/spotify-make).  The hope is
+that we ultimately reach
+[a unified solution](https://github.com/aspiers/opensuse-spotify-installer/pull/37#issuecomment-95361176)
+which reuses the combined efforts of as many people as possible, in an
+efficient and collaborative manner.
 
 ## How to use
 
@@ -20,7 +31,8 @@ is as follows:
 1. Install the `spotify-installer` package from Packman via [1-click install](http://packman.links2linux.org/install/spotify-installer) (you can also find the button on [this page](http://packman.links2linux.org/package/spotify-installer)), or via [YaST and/or zypper](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation).
 2. Run `install-spotify` as a non-root user (e.g. from any terminal program).
 
-Alternatively you can skip PackMan and use it as follows:
+Alternatively, once we fix some known issues, you will be able to skip
+PackMan and use it as follows:
 
 1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
 2. Download [`spotify-client.spec`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/spotify-client.spec) and place it in `/usr/src/packages/SPECS`
