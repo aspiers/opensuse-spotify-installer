@@ -13,16 +13,16 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.9.17.1.g9b85d43.7
+Version:        0.9.17.8.gd06432d.31
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
-Source0: spotify-client_%{version}-%{release}_amd64.deb
+Source0: spotify-client-0.9.17_%{version}-%{release}_amd64.deb
 %else
-Source0: spotify-client_%{version}-%{release}_i386.deb
+Source0: spotify-client-0.9.17_%{version}-%{release}_i386.deb
 %endif
 NoSource:       0
 %if 0%{?suse_version}
@@ -103,7 +103,7 @@ sed -i 's/^\(MimeType=.*\);?$/\1;/i ;
 #%suse_update_desktop_file $desktop
 
 mkdir -p %{buildroot}%{_docdir}/%{name}
-mv usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
+#mv usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
 cat >%{buildroot}%{_docdir}/%{name}/README <<EOF
 This package was built by the openSUSE Spotify installer; see
 

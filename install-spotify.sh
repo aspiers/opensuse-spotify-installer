@@ -20,9 +20,10 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 RPM_SPEC_DIR="."
 
 # Name of file residing within official Spotify repository above
+FILE_NAME="spotify-client-0.9.17"
+VERSION="0.9.17.8.gd06432d.31-1"
+BASENAME="${FILE_NAME}_$VERSION"
 RPM_NAME="spotify-client"
-VERSION="0.9.17.1.g9b85d43.7-1"
-BASENAME="${RPM_NAME}_$VERSION"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
