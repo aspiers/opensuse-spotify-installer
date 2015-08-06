@@ -8,7 +8,7 @@
 
 SPOTIFY_BIN="/usr/bin/spotify"
 
-POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify"
+POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify-client"
 
 #RPM_TOPDIR="/usr/src/packages"
 RPM_TOPDIR="$HOME/rpmbuild"
@@ -20,8 +20,11 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 RPM_SPEC_DIR="."
 
 # Name of file residing within official Spotify repository above
-FILE_NAME="spotify-client-0.9.17"
-VERSION="0.9.17.8.gd06432d.31-1"
+FILE_NAME="spotify-client"
+VERSION="1.0.11"
+RELEASE="1"
+VER_AMD64="131.gf4d47cb0"
+VER_I386="129.g61510de3"
 BASENAME="${FILE_NAME}_$VERSION"
 RPM_NAME="spotify-client"
 
@@ -178,10 +181,10 @@ please uninstall first via:
 download_spotify_deb () {
     arch=$(arch)
     if [ "$arch" == "x86_64" ]; then
-        deb=${BASENAME}_amd64.deb
+        deb=${BASENAME}.${VER_AMD64}_amd64.deb
         rpmarch="x86_64"
     elif [ "$arch" == "i686" ]; then
-        deb=${BASENAME}_i386.deb
+        deb=${BASENAME}.${VER_I386}_i386.deb
         rpmarch="i586"
     else
         fatal "
@@ -216,7 +219,7 @@ build_rpm () {
     sleep 3
     safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
 
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$rpmarch.rpm"
 
     if ! [ -e "$rpm" ]; then
         fatal "

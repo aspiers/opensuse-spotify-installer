@@ -13,16 +13,16 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.9.17.8.gd06432d.31
+Version:        1.0.11
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
-Source0: spotify-client-0.9.17_%{version}-%{release}_amd64.deb
+Source0: spotify-client_1.0.11.131.gf4d47cb0_amd64.deb
 %else
-Source0: spotify-client-0.9.17_%{version}-%{release}_i386.deb
+Source0: spotify-client_1.0.11.129.gd61510de3_i386.deb
 %endif
 NoSource:       0
 %if 0%{?suse_version}
@@ -67,9 +67,9 @@ It includes the following features:
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
-tar -xf data.tar.xz
+tar -xf data.tar.gz
 # remove used files
-rm {control.tar.gz,data.tar.xz} debian-binary
+rm {control.tar.gz,data.tar.gz} debian-binary
 
 %define _use_internal_dependency_generator 0
 %define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
@@ -86,10 +86,10 @@ chmod +x %__find_requires
 # no need to build
 
 %install
-mv opt %{buildroot}
+mv usr %{buildroot}
 
-%define spotifydir /opt/spotify/spotify-client
-%define spotifylibdir %spotifydir/lib
+%define spotifydir /usr/share/spotify
+#%define spotifylibdir %spotifydir
 
 # Fix spotify.desktop file:
 # - trailing semi-colon is required for fields with multiple values
@@ -100,10 +100,10 @@ sed -i 's/^\(MimeType=.*\);?$/\1;/i ;
 
 # http://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25suse_update_desktop_file
 # http://en.opensuse.org/openSUSE:Packaging_desktop_menu_categories#Multimedia
-#%suse_update_desktop_file $desktop
+%suse_update_desktop_file $desktop
 
 mkdir -p %{buildroot}%{_docdir}/%{name}
-#mv usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
+mv %{buildroot}/usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
 cat >%{buildroot}%{_docdir}/%{name}/README <<EOF
 This package was built by the openSUSE Spotify installer; see
 
@@ -111,44 +111,6 @@ This package was built by the openSUSE Spotify installer; see
 
 for more information.
 EOF
-
-# fix libraries
-mkdir -p %{buildroot}%{spotifylibdir}
-ln -sf ../Data/libcef.so %{buildroot}%{spotifylibdir}/libcef.so
-
-# install binary wrapper
-mkdir -p %{buildroot}%{_bindir}
-wrapper="%{buildroot}%{_bindir}/spotify"
-cat >"$wrapper" <<'EOF'
-#!/bin/sh
-
-if [ -n "$SPOTIFY_CLEAN_CACHE" ]; then
-    echo
-    echo -n "Cleaning spotify cache ... "
-    rm -rf ~/.cache/spotify
-    echo "done."
-fi
-
-cd %{spotifydir}
-LD_LIBRARY_PATH=%{spotifylibdir} ./spotify "$@"
-EOF
-
-chmod +x "$wrapper"
-
-# link dependencies
-mkdir -p %{buildroot}%{_libdir}
-ln -sf /%{_lib}/libcrypto.so.1.0.0 %{buildroot}%{spotifylibdir}/libcrypto.so.0.9.8
-ln -sf /%{_lib}/libssl.so.1.0.0 %{buildroot}%{spotifylibdir}/libssl.so.0.9.8
-libs=(
-    libnss3.so.1d \
-    libnssutil3.so.1d \
-    libsmime3.so.1d \
-    libplc4.so.0d \
-    libnspr4.so.0d
-)
-for lib in "${libs[@]}"; do
-    ln -sf %{_libdir}/${lib%.[01]d} %{buildroot}%{spotifylibdir}/$lib
-done
 
 # 0.8.8 has an errant RPATH which was accidentally left in
 # http://community.spotify.com/t5/Desktop-Linux/ANNOUNCE-Spotify-0-8-8-for-GNU-Linux/m-p/238118/highlight/true#M1867
@@ -158,22 +120,18 @@ export NO_BRP_CHECK_RPATH=true
 /sbin/ldconfig
 
 cd %{spotifydir}
-./register.sh
-#%desktop_database_post
-#%icon_theme_cache_post
+%desktop_database_post
+%icon_theme_cache_post
 
 %preun
-if [ "$1" = 0 ]; then
-    cd %{spotifydir}
-    ./unregister.sh
-fi
+# do nothing
 
 %postun
 if [ "$1" = 0 ]; then
     /sbin/ldconfig
 fi
-#%desktop_database_postun
-#%icon_theme_cache_postun
+%desktop_database_postun
+%icon_theme_cache_postun
 
 %files
 %defattr(-,root,root)
