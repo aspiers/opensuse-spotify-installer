@@ -20,7 +20,7 @@ Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
-Source0: spotify-client_1.0.13.111.g6bd0deca_amd64.deb
+Source0: spotify-client_1.0.13.112.g539ef41b_amd64.deb
 %else
 Source0: spotify-client_1.0.13.111.g6bd0deca_i386.deb
 %endif
