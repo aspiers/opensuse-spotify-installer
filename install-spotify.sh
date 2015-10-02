@@ -21,10 +21,10 @@ RPM_SPEC_DIR="."
 
 # Name of file residing within official Spotify repository above
 FILE_NAME="spotify-client"
-VERSION="1.0.13"
+VERSION="1.0.14"
 RELEASE="1"
-VER_AMD64="112.g539ef41b"
-VER_I386="111.g6bd0deca"
+VER_AMD64="124.g4dfabc51"
+VER_I386="122.gf29d9be0"
 BASENAME="${FILE_NAME}_$VERSION"
 RPM_NAME="spotify-client"
 
