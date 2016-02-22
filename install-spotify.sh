@@ -40,7 +40,7 @@ VERSION=$VER_AMD64
 RELEASE="1"
 BASENAME="${FILE_NAME}_$VERSION"
 
-ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
+ISSUE_TRACKER_URL="https://github.com/cornguo/opensuse-spotify-installer/issues"
 
 main () {
     parse_args "$@"
