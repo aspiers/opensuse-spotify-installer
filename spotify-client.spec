@@ -13,16 +13,16 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        1.0.23
+Version:        VERTOKEN
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
-Url:            http://www.spotify.com/download/previews/
+Url:            http://www.spotify.com/download/linux
 Group:          Productivity/Multimedia/Sound/Players
 %ifarch x86_64
-Source0: spotify-client_1.0.23.93.gd6cfae15-30_amd64.deb
+Source0: DEB_AMD64
 %else
-Source0: spotify-client_1.0.23.93.gd6cfae15-5_i386.deb
+Source0: DEB_I386
 %endif
 NoSource:       0
 %if 0%{?suse_version}

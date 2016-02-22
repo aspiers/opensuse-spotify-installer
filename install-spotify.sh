@@ -18,15 +18,27 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 # directory, so the spec file goes in /usr/src/packages even though
 # the rest of the rpmbuild stuff lives in $HOME.
 RPM_SPEC_DIR="."
+RPM_NAME="spotify-client"
+
+# find current version
+echo "Getting current version info..."
+FILE_LIST=`curl -sL $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+FILE_AMD64=`echo "$FILE_LIST" | grep "amd64"`
+FILE_I386=`echo "$FILE_LIST" | grep "i386"`
+
+VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
+VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
+echo "Current version = $VER_AMD64"
+
+echo "Creating spec file from template..."
+SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
+cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VER_AMD64/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
 
 # Name of file residing within official Spotify repository above
 FILE_NAME="spotify-client"
-VERSION="1.0.23"
+VERSION=$VER_AMD64
 RELEASE="1"
-VER_AMD64="93.gd6cfae15-30"
-VER_I386="93.gd6cfae15-5"
 BASENAME="${FILE_NAME}_$VERSION"
-RPM_NAME="spotify-client"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
@@ -181,10 +193,10 @@ please uninstall first via:
 download_spotify_deb () {
     arch=$(arch)
     if [ "$arch" == "x86_64" ]; then
-        deb=${BASENAME}.${VER_AMD64}_amd64.deb
+        deb=$FILE_AMD64
         rpmarch="x86_64"
     elif [ "$arch" == "i686" ]; then
-        deb=${BASENAME}.${VER_I386}_i386.deb
+        deb=$FILE_I386
         rpmarch="i586"
     else
         fatal "
@@ -217,7 +229,7 @@ build_rpm () {
     echo "About to build $RPM_NAME rpm; please be patient ..."
     echo
     sleep 3
-    safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
+    safe_run rpmbuild -ba "/tmp/$RPM_NAME.spec"
 
     rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$rpmarch.rpm"
 
@@ -228,6 +240,8 @@ rpmbuild failed :-(  Please consider filing a bug at:
     $ISSUE_TRACKER_URL
 "
     fi
+
+    rm -f /tmp/$RPM_NAME.spec
 
     echo
     progress "rpm successfully built!"
