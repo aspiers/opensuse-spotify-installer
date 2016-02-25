@@ -71,16 +71,17 @@ tar -xf data.tar.gz
 # remove used files
 rm {control.tar.gz,data.tar.gz} debian-binary
 
-#%define _use_internal_dependency_generator 0
-#%define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
-#cat >%__find_requires <<'EOF'
-##!/bin/sh
-#
-#/usr/lib/rpm/find-requires | \
-#    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
-#            /lib\(crypto\|ssl\|gcrypt\)\.so/d'
-#EOF
-#chmod +x %__find_requires
+# rewrite or remove some requires
+%define _use_internal_dependency_generator 0
+%define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
+cat >%__find_requires <<'EOF'
+#!/bin/sh
+
+/usr/lib/rpm/find-requires | \
+    sed -e 's/lib\(nss3\|nssutil3\|smime3\|plc4\|nspr4\)\.so\.[01]d/lib\1.so/
+            /lib\(curl\|crypto\|ssl\|gcrypt\)\.so/d'
+EOF
+chmod +x %__find_requires
 
 %build
 # no need to build
