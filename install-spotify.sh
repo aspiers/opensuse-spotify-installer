@@ -28,7 +28,7 @@ ARCH=$(arch)
 get_params() {
     # get current online version
     echo "Getting version info..."
-    FILE_LIST=`curl -sL $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+    FILE_LIST=`wget --progress=bar --show-progress -qO - $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
     FILE_AMD64=`echo "$FILE_LIST" | grep "amd64"`
     FILE_I386=`echo "$FILE_LIST" | grep "i386"`
 
@@ -238,7 +238,7 @@ Aborting.
     dest="$RPM_SOURCE_DIR/$DEB"
     if [ ! -e "$dest" ]; then
         echo "Downloading Spotify .deb package ..."
-        safe_run wget -O "$dest" "$POOL_URL/$DEB"
+        safe_run wget --progress=bar --show-progress -qO "$dest" "$POOL_URL/$DEB"
         progress ".deb downloaded."
     else
         progress "Spotify .deb package already exists:"

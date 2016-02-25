@@ -6,7 +6,7 @@ So here it is.
 This is a modified version of [Adam Spiers' install script](https://github.com/aspiers/opensuse-spotify-installer).
 
 It works mostly like the original one: download `.deb` package then repack it to `.rpm` file for RPM-based system to install.
-I've add some scripts which make it able to get latest version online, you might have to install `curl` or it may fails.
+I've add some scripts which make it able to get latest version online, make sure you have `wget` installed.
 
 It only tested on Tumbleweed, but I think Leap can also work.
 
