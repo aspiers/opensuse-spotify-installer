@@ -20,27 +20,57 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 RPM_SPEC_DIR="."
 RPM_NAME="spotify-client"
 
-# find current version
-echo "Getting current version info..."
-FILE_LIST=`curl -sL $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
-FILE_AMD64=`echo "$FILE_LIST" | grep "amd64"`
-FILE_I386=`echo "$FILE_LIST" | grep "i386"`
-
-VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
-VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
-echo "Current version = $VER_AMD64"
-
-echo "Creating spec file from template..."
-SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VER_AMD64/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
-
-# Name of file residing within official Spotify repository above
-FILE_NAME="spotify-client"
-VERSION=$VER_AMD64
-RELEASE="1"
-BASENAME="${FILE_NAME}_$VERSION"
-
 ISSUE_TRACKER_URL="https://github.com/cornguo/opensuse-spotify-installer/issues"
+
+# get architecture
+ARCH=$(arch)
+
+get_params() {
+    # get current online version
+    echo "Getting version info..."
+    FILE_LIST=`curl -sL $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+    FILE_AMD64=`echo "$FILE_LIST" | grep "amd64"`
+    FILE_I386=`echo "$FILE_LIST" | grep "i386"`
+
+    VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
+    VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
+
+    if [ "$ARCH" == "x86_64" ]; then
+        DEB=$FILE_AMD64
+        RPMARCH="x86_64"
+        VERSION=$VER_AMD64
+    elif [ "$ARCH" == "i686" ]; then
+        DEB=$FILE_I386
+        RPMARCH="i586"
+        VERSION=$VER_I386
+    fi
+
+    # Name of file residing within official Spotify repository above
+    FILE_NAME="spotify-client"
+    RELEASE="1"
+    BASENAME="${FILE_NAME}_$VERSION"
+
+    # get current installed version
+    VER_CURRENT=`rpm -qa | grep $RPM_NAME | awk -F '-' '{print $3}'`
+    if [ -z $VER_CURRENT ]; then
+        VER_CURRENT="(not installed)"
+    fi
+
+    progress "Current version = $VER_CURRENT, online version = $VERSION, arch = $RPMARCH"
+
+    if [ "$VER_CURRENT" == "$VERSION" ]; then
+        error "Current installed version is the latest version."
+        echo
+        return -1
+    fi
+
+    echo "Creating spec file from template..."
+    SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
+    cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+
+    echo
+    return 0
+}
 
 main () {
     parse_args "$@"
@@ -48,6 +78,7 @@ main () {
     check_non_root
 
     if [ -z "$uninstall" ]; then
+        get_params
         if check_not_installed; then
             safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
             install_rpm_build
@@ -191,14 +222,7 @@ please uninstall first via:
 }
 
 download_spotify_deb () {
-    arch=$(arch)
-    if [ "$arch" == "x86_64" ]; then
-        deb=$FILE_AMD64
-        rpmarch="x86_64"
-    elif [ "$arch" == "i686" ]; then
-        deb=$FILE_I386
-        rpmarch="i586"
-    else
+    if [ "$ARCH" != "x86_64" -a "$ARCH" != "i686" ]; then
         fatal "
 Sorry, $arch architecture isn't supported.  If you think this is a
 mistake, please consider filing a bug at:
@@ -209,12 +233,12 @@ Aborting.
 "
     fi
 
-    RPM_DIR="$RPM_TOPDIR/RPMS/$rpmarch"
+    RPM_DIR="$RPM_TOPDIR/RPMS/$RPMARCH"
 
-    dest="$RPM_SOURCE_DIR/$deb"
+    dest="$RPM_SOURCE_DIR/$DEB"
     if [ ! -e "$dest" ]; then
         echo "Downloading Spotify .deb package ..."
-        safe_run wget -O "$dest" "$POOL_URL/$deb"
+        safe_run wget -O "$dest" "$POOL_URL/$DEB"
         progress ".deb downloaded."
     else
         progress "Spotify .deb package already exists:"
@@ -231,7 +255,7 @@ build_rpm () {
     sleep 3
     safe_run rpmbuild -ba "/tmp/$RPM_NAME.spec"
 
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$rpmarch.rpm"
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$RPMARCH.rpm"
 
     if ! [ -e "$rpm" ]; then
         fatal "
