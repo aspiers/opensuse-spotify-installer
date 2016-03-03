@@ -61,7 +61,20 @@ get_params() {
     if [ "$VER_CURRENT" == "$VERSION" ]; then
         error "Current installed version is the latest version."
         echo
-        return -1
+    fi
+
+    if [ "(not installed)" != "$VER_CURRENT" ]; then
+        echo -n "Uninstall current version? y/n> "
+        read answer
+        case "$answer" in
+            y|yes|Y|YES)
+                uninstall
+                ;;
+            *)
+                echo
+                return -1
+                ;;
+        esac
     fi
 
     echo
@@ -74,25 +87,26 @@ main () {
     check_non_root
 
     if [ -z "$uninstall" ]; then
-        get_params
-        if check_not_installed; then
-            echo "Creating spec file from template..."
-            SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-            safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+        if get_params; then
+            if check_not_installed; then
+                echo "Creating spec file from template..."
+                SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
+                safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
 
-            safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
-            install_rpm_build
+                safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
+                install_rpm_build
+                echo
+                download_spotify_deb
+                echo
+                build_rpm
+                echo
+                install_rpm
+            fi
             echo
-            download_spotify_deb
+            maybe_install_libmp3lame0
             echo
-            build_rpm
-            echo
-            install_rpm
+            progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
         fi
-        echo
-        maybe_install_libmp3lame0
-        echo
-        progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
     else
         uninstall
     fi
