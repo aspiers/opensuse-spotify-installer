@@ -51,7 +51,7 @@ get_params() {
     BASENAME="${FILE_NAME}_$VERSION"
 
     # get current installed version
-    VER_CURRENT=`rpm -qa | grep $RPM_NAME | awk -F '-' '{print $3}'`
+    VER_CURRENT=`rpm -q $RPM_NAME | awk -F '-' '{print $3}'`
     if [ -z $VER_CURRENT ]; then
         VER_CURRENT="(not installed)"
     fi
