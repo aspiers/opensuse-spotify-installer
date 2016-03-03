@@ -29,8 +29,8 @@ get_params() {
     # get current online version
     echo "Getting version info..."
     FILE_LIST=`wget --progress=bar --show-progress -qO - $POOL_URL | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
-    FILE_AMD64=`echo "$FILE_LIST" | grep "amd64"`
-    FILE_I386=`echo "$FILE_LIST" | grep "i386"`
+    FILE_AMD64=`echo "$FILE_LIST" | grep "amd64" | sort | tail -n 1`
+    FILE_I386=`echo "$FILE_LIST" | grep "i386" | sort | tail -n 1`
 
     VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
     VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
