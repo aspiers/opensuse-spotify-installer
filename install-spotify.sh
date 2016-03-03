@@ -78,7 +78,8 @@ main () {
         if check_not_installed; then
             echo "Creating spec file from template..."
             SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-            cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+            safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+
             safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
             install_rpm_build
             echo
