@@ -21,6 +21,8 @@ ISSUE_TRACKER_URL="https://github.com/cornguo/opensuse-spotify-installer/issues"
 
 # get system architecture
 ARCH=$(arch)
+OSNAME=`cat /etc/os-release | grep "^NAME=" | awk -F '=' '{print $2}' | tr -d '"' | sed 's/ /_/g'`
+OSVER=`cat /etc/os-release | grep "^VERSION=" | awk -F '=' '{print $2}' | awk -F ' ' '{print $1}' | tr -d '"'`
 
 main () {
     parse_args "$@"
@@ -236,7 +238,7 @@ install_libmp3lame0 () {
     if safe_run zypper lr -d | grep -iq 'packman'; then
         progress "Packman repository is already configured - good :)"
     else
-        safe_run sudo zypper ar -f http://packman.inode.at/suse/12.2/packman.repo
+        safe_run sudo zypper ar -f http://packman.inode.at/suse/${OSNAME}_${OSVER}/packman.repo
         progress "Added Packman repository."
     fi
 
