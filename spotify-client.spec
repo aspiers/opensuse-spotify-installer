@@ -14,7 +14,7 @@
 
 Name:           spotify-client
 Version:        VERTOKEN
-Release:        1
+Release:        RELTOKEN
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/linux

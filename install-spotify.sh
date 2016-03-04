@@ -30,9 +30,10 @@ main () {
     if [ -z "$uninstall" ]; then
         if get_params; then
             if check_not_installed; then
-                echo "Creating spec file from template..."
+                progress "Creating spec file from template..."
                 SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-                safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+                safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/RELTOKEN/$RELEASE/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+                echo
                 safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
                 install_rpm_build
                 echo
@@ -60,23 +61,27 @@ get_params() {
     FILE_AMD64=`echo "$FILE_LIST" | grep "amd64" | sort | tail -n 1`
     FILE_I386=`echo "$FILE_LIST" | grep "i386" | sort | tail -n 1`
 
-    VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
-    VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
+    VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f2- | rev`
+    VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f2- | rev`
+
+    RELEASE_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f1 | rev`
+    RELEASE_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f1 | rev`
 
     # decide version by arch
     if [ "$ARCH" == "x86_64" ]; then
         DEB=$FILE_AMD64
         RPMARCH="x86_64"
         VERSION=$VER_AMD64
+        RELEASE=$RELEASE_AMD64
     elif [ "$ARCH" == "i686" ]; then
         DEB=$FILE_I386
         RPMARCH="i586"
         VERSION=$VER_I386
+        RELEASE=$RELEASE_I386
     fi
 
     # Name of file residing within official Spotify repository above
     FILE_NAME="spotify-client"
-    RELEASE="1"
     BASENAME="${FILE_NAME}_$VERSION"
 
     # get current installed version
@@ -85,30 +90,40 @@ get_params() {
         VER_CURRENT="(not installed)"
     fi
 
-    progress "Current version = $VER_CURRENT, online version = $VERSION, arch = $RPMARCH"
+    progress "Current version = $VER_CURRENT, online version = $VERSION, arch = $RPMARCH, release = $RELEASE"
 
     PROMPTMSG="Upgrade?"
 
     # if is the latest version, echo message
     if [ "$VER_CURRENT" == "$VERSION" ]; then
-        error "Current installed version is the latest version."
+        warn "Current installed version is the latest version."
         PROMPTMSG="Reinstall?"
         echo
     fi
 
     # ask if user want to reinstall
     if [ "(not installed)" != "$VER_CURRENT" ]; then
-        echo -n "$PROMPTMSG y/n> "
-        read answer
-        case "$answer" in
-            y|yes|Y|YES)
-                uninstall
-                ;;
-            *)
-                echo
-                return -1
-                ;;
-        esac
+        if [ "$ARCH" != "x86_64" -a "$ARCH" != "i686" ]; then
+            fatal "
+Sorry, $ARCH architecture isn't supported.  If you think this is a
+mistake, please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL
+
+Aborting."
+        else
+            echo -n "$PROMPTMSG y/n> "
+            read answer
+            case "$answer" in
+                y|yes|Y|YES)
+                    uninstall
+                    ;;
+                *)
+                    echo
+                    return -1
+                    ;;
+            esac
+        fi
     fi
 
     echo
@@ -169,7 +184,7 @@ parse_args () {
 progress () { tput bold; tput setaf 2; echo     "$*"; tput sgr0; }
 warn     () { tput bold; tput setaf 3; echo >&2 "$*"; tput sgr0; }
 error    () { tput bold; tput setaf 1; echo >&2 "$*"; tput sgr0; }
-fatal    () { error "$@"; exit 1; }
+fatal    () { error "$@"; echo; exit 1; }
 
 safe_run () {
     if ! "$@"; then
@@ -191,8 +206,7 @@ maybe_install_libmp3lame0 () {
         warn "\
 WARNING: You do not have libmp3lame0 installed, so playback of local
 mp3 files will not work.  Would you like me to install this from
-Packman now?
-"
+Packman now?"
         echo -n "Type y/n> "
         read answer
         case "$answer" in
@@ -239,17 +253,6 @@ please uninstall first via:
 }
 
 download_spotify_deb () {
-    if [ "$ARCH" != "x86_64" -a "$ARCH" != "i686" ]; then
-        fatal "
-Sorry, $arch architecture isn't supported.  If you think this is a
-mistake, please consider filing a bug at:
-
-    $ISSUE_TRACKER_URL
-
-Aborting.
-"
-    fi
-
     RPM_DIR="$RPM_TOPDIR/RPMS/$RPMARCH"
 
     dest="$RPM_SOURCE_DIR/$DEB"
@@ -278,8 +281,7 @@ build_rpm () {
         fatal "
 rpmbuild failed :-(  Please consider filing a bug at:
 
-    $ISSUE_TRACKER_URL
-"
+    $ISSUE_TRACKER_URL"
     fi
 
     rm -f /tmp/$RPM_NAME.spec
