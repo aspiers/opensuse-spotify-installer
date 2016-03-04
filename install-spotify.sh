@@ -6,24 +6,52 @@
 #
 # http://community.spotify.com/t5/Desktop-Linux/Segfault-on-opensuse-12-2/m-p/161048/highlight/true#M1331
 
-SPOTIFY_BIN="/usr/bin/spotify"
-
 POOL_URL="http://repository.spotify.com/pool/non-free/s/spotify-client"
 
-#RPM_TOPDIR="/usr/src/packages"
-RPM_TOPDIR="$HOME/rpmbuild"
-RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 # We prefer to keep the amount of code running as root to an absolute
 # minimum, but spotify-installer.spec can't install to a user's home
 # directory, so the spec file goes in /usr/src/packages even though
 # the rest of the rpmbuild stuff lives in $HOME.
+RPM_TOPDIR="$HOME/rpmbuild"
+RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 RPM_SPEC_DIR="."
 RPM_NAME="spotify-client"
 
 ISSUE_TRACKER_URL="https://github.com/cornguo/opensuse-spotify-installer/issues"
 
-# get architecture
+# get system architecture
 ARCH=$(arch)
+
+main () {
+    parse_args "$@"
+
+    check_non_root
+
+    if [ -z "$uninstall" ]; then
+        if get_params; then
+            if check_not_installed; then
+                echo "Creating spec file from template..."
+                SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
+                safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+                safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
+                install_rpm_build
+                echo
+                download_spotify_deb
+                echo
+                build_rpm
+                echo
+                install_rpm
+            fi
+            echo
+            maybe_install_libmp3lame0
+            echo
+            SPOTIFY_BIN=`which spotify`
+            progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
+        fi
+    else
+        uninstall
+    fi
+}
 
 get_params() {
     # get current online version
@@ -35,6 +63,7 @@ get_params() {
     VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
     VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | rev | cut -d. -f3- | rev`
 
+    # decide version by arch
     if [ "$ARCH" == "x86_64" ]; then
         DEB=$FILE_AMD64
         RPMARCH="x86_64"
@@ -58,13 +87,18 @@ get_params() {
 
     progress "Current version = $VER_CURRENT, online version = $VERSION, arch = $RPMARCH"
 
+    PROMPTMSG="Upgrade?"
+
+    # if is the latest version, echo message
     if [ "$VER_CURRENT" == "$VERSION" ]; then
         error "Current installed version is the latest version."
+        PROMPTMSG="Reinstall?"
         echo
     fi
 
+    # ask if user want to reinstall
     if [ "(not installed)" != "$VER_CURRENT" ]; then
-        echo -n "Uninstall current version? y/n> "
+        echo -n "$PROMPTMSG y/n> "
         read answer
         case "$answer" in
             y|yes|Y|YES)
@@ -79,37 +113,6 @@ get_params() {
 
     echo
     return 0
-}
-
-main () {
-    parse_args "$@"
-
-    check_non_root
-
-    if [ -z "$uninstall" ]; then
-        if get_params; then
-            if check_not_installed; then
-                echo "Creating spec file from template..."
-                SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-                safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
-
-                safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
-                install_rpm_build
-                echo
-                download_spotify_deb
-                echo
-                build_rpm
-                echo
-                install_rpm
-            fi
-            echo
-            maybe_install_libmp3lame0
-            echo
-            progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
-        fi
-    else
-        uninstall
-    fi
 }
 
 usage () {
