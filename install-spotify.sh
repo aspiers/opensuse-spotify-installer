@@ -61,11 +61,13 @@ get_params() {
     FILE_AMD64=`echo "$FILE_LIST" | grep "amd64" | sort | tail -n 1`
     FILE_I386=`echo "$FILE_LIST" | grep "i386" | sort | tail -n 1`
 
-    VER_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f2- | rev`
-    VER_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f2- | rev`
+    INFO_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | sed 's/-/./g'`
+    VER_AMD64=`echo "$INFO_AMD64" | rev | cut -d. -f2- | rev`
+    RELEASE_AMD64=`echo "$INFO_AMD64" | rev | cut -d. -f1 | rev`
 
-    RELEASE_AMD64=`echo "$FILE_AMD64" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f1 | rev`
-    RELEASE_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | sed 's/-/./g' | rev | cut -d. -f1 | rev`
+    INFO_I386=`echo "$FILE_I386" | awk -F '_' '{print $2}' | sed 's/-/./g'`
+    VER_I386=`echo "$INFO_I386" | rev | cut -d. -f2- | rev`
+    RELEASE_I386=`echo "$INFO_I386" | rev | cut -d. -f1 | rev`
 
     # decide version by arch
     if [ "$ARCH" == "x86_64" ]; then
@@ -86,9 +88,9 @@ get_params() {
 
     # get current installed version
     CURRENT=`rpm -q "$RPM_NAME"`
-    VER_CURRENT=`echo $CURRENT | awk -F '-' '{print $3}'`
-    RELEASE_CURRENT=`echo $CURRENT | awk -F '-' '{print $4}' | awk -F '.' '{print $1}'`
-    ARCH_CURRENT=`echo $CURRENT | awk -F '-' '{print $4}' | awk -F '.' '{print $2}'`
+    VER_CURRENT=`echo "$CURRENT" | awk -F '-' '{print $3}'`
+    RELEASE_CURRENT=`echo "$CURRENT" | awk -F '-' '{print $4}' | awk -F '.' '{print $1}'`
+    ARCH_CURRENT=`echo "$CURRENT" | awk -F '-' '{print $4}' | awk -F '.' '{print $2}'`
     if [ -z $VER_CURRENT ]; then
         VER_CURRENT="(not installed)"
     fi
