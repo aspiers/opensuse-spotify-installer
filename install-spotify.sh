@@ -90,7 +90,8 @@ get_params() {
         VER_CURRENT="(not installed)"
     fi
 
-    progress "Current version = $VER_CURRENT, online version = $VERSION, arch = $RPMARCH, release = $RELEASE"
+    progress "Current version = $VER_CURRENT"
+    progress "Online version  = $VERSION, arch = $RPMARCH, release = $RELEASE"
 
     PROMPTMSG="Upgrade?"
 
