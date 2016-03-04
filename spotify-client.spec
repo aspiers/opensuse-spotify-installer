@@ -108,7 +108,7 @@ mv %{buildroot}/usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
 cat >%{buildroot}%{_docdir}/%{name}/README <<EOF
 This package was built by the openSUSE Spotify installer; see
 
-    https://github.com/aspiers/opensuse-spotify-installer
+    https://github.com/cornguo/opensuse-spotify-installer
 
 for more information.
 EOF
