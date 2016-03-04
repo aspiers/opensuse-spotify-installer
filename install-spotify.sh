@@ -85,18 +85,21 @@ get_params() {
     BASENAME="${FILE_NAME}_$VERSION"
 
     # get current installed version
-    VER_CURRENT=`rpm -q "$RPM_NAME" | awk -F '-' '{print $3}'`
+    CURRENT=`rpm -q "$RPM_NAME"`
+    VER_CURRENT=`echo $CURRENT | awk -F '-' '{print $3}'`
+    RELEASE_CURRENT=`echo $CURRENT | awk -F '-' '{print $4}' | awk -F '.' '{print $1}'`
+    ARCH_CURRENT=`echo $CURRENT | awk -F '-' '{print $4}' | awk -F '.' '{print $2}'`
     if [ -z $VER_CURRENT ]; then
         VER_CURRENT="(not installed)"
     fi
 
-    progress "Current version = $VER_CURRENT"
-    progress "Online version  = $VERSION, arch = $RPMARCH, release = $RELEASE"
+    progress "Current version = $VER_CURRENT, release = $RELEASE_CURRENT, arch = $ARCH_CURRENT"
+    progress "Online version  = $VERSION, release = $RELEASE, arch = $RPMARCH"
 
     PROMPTMSG="Upgrade?"
 
     # if is the latest version, echo message
-    if [ "$VER_CURRENT" == "$VERSION" ]; then
+    if [ "$VER_CURRENT" == "$VERSION" -a "$RELEASE_CURRENT" == "$RELEASE" ]; then
         warn "Current installed version is the latest version."
         PROMPTMSG="Reinstall?"
         echo
