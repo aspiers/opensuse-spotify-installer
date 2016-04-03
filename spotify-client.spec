@@ -32,6 +32,7 @@ Requires:       libopenssl1_0_0
 Requires:       libpng12-0
 Recommends:     libmp3lame0
 Recommends:     ffmpeg
+Recommends:     zenity
 %endif
 
 # not currently tested on Fedora or Mandriva, but leaving
