@@ -28,6 +28,7 @@ main () {
     parse_args "$@"
 
     check_non_root
+    install_wget
 
     if [ -z "$uninstall" ]; then
         if get_params; then
@@ -223,6 +224,14 @@ Packman now?"
                 install_libmp3lame0
                 ;;
         esac
+    fi
+}
+
+install_wget() {
+    if rpm -q wget >/dev/null; then
+        progress "wget is installed."
+    else
+        safe_run sudo zypper -n install -lny wget
     fi
 }
 
