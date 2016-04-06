@@ -37,27 +37,67 @@ main () {
     fi
 }
 
-install () {
-    if get_params; then
-        if check_not_installed; then
-            progress "Creating spec file from template..."
-            SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
-            safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/RELTOKEN/$RELEASE/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
-            echo
-            safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
-            install_rpm_build
-            echo
-            download_spotify_deb
-            echo
-            build_rpm
-            echo
-            install_rpm
-        fi
+# display functions
+progress () { tput bold; tput setaf 2; echo     "$*"; tput sgr0; }
+warn     () { tput bold; tput setaf 3; echo >&2 "$*"; tput sgr0; }
+error    () { tput bold; tput setaf 1; echo >&2 "$*"; tput sgr0; }
+fatal    () { error "$@"; echo; exit 1; }
+
+build_rpm () {
+    echo "About to build $RPM_NAME rpm; please be patient ..."
+    echo
+    sleep 3
+    safe_run rpmbuild -ba "/tmp/$RPM_NAME.spec"
+
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$RPMARCH.rpm"
+
+    if ! [ -e "$rpm" ]; then
+        fatal "
+rpmbuild failed :-(  Please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL"
+    fi
+
+    rm -f /tmp/$RPM_NAME.spec
+
+    echo
+    progress "rpm successfully built!"
+}
+
+check_not_installed () {
+    if rpm -q "$RPM_NAME" >/dev/null; then
+        warn "$RPM_NAME is already installed!  If you want to re-install,
+please uninstall first via:
+
+    $0 -u"
+        return 1
+    else
+        return 0
+    fi
+}
+
+check_non_root () {
+    if [ "$(id -u)" = "0" ]; then
+        fatal "\
+Please run this script non-root, it's a bit safer that way.
+It will use sudo for commands which need root.  Aborting."
+    fi
+}
+
+download_spotify_deb () {
+    RPM_DIR="$RPM_TOPDIR/RPMS/$RPMARCH"
+
+    dest="$RPM_SOURCE_DIR/$DEB"
+    if [ ! -e "$dest" ]; then
+        echo "Downloading Spotify .deb package ..."
+        safe_run wget --show-progress --progress=bar -qO "$dest" "$POOL_URL/$DEB"
+        progress ".deb downloaded."
+    else
+        progress "Spotify .deb package already exists:"
         echo
-        maybe_install_libmp3lame0
+        echo "  ${dest/$HOME/~}"
         echo
-        SPOTIFY_BIN=`which spotify`
-        progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
+        echo "Skipping download."
     fi
 }
 
@@ -143,25 +183,87 @@ Aborting."
     return 0
 }
 
-usage () {
-    # Call as: usage [EXITCODE] [USAGE MESSAGE]
-    exit_code=1
-    if [[ "$1" == [0-9] ]]; then
-        exit_code="$1"
-        shift
-    fi
-    if [ -n "$1" ]; then
-        echo "$*" >&2
+install () {
+    if get_params; then
+        if check_not_installed; then
+            progress "Creating spec file from template..."
+            SPEC_TEMPLATE="$RPM_SPEC_DIR/${RPM_NAME}.spec"
+            safe_run cat $SPEC_TEMPLATE | sed "s/VERTOKEN/$VERSION/g" | sed "s/RELTOKEN/$RELEASE/g" | sed "s/DEB_AMD64/$FILE_AMD64/g" | sed "s/DEB_I386/$FILE_I386/g" > /tmp/$RPM_NAME.spec
+            echo
+            safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
+            install_rpm_build
+            echo
+            download_spotify_deb
+            echo
+            build_rpm
+            echo
+            install_rpm
+        fi
         echo
+        maybe_install_libmp3lame0
+        echo
+        SPOTIFY_BIN=`which spotify`
+        progress "Spotify can now be run via $SPOTIFY_BIN - happy listening!"
+    fi
+}
+
+install_libmp3lame0 () {
+    if safe_run zypper lr -d | grep -iq 'packman'; then
+        progress "Packman repository is already configured - good :)"
+    else
+        safe_run sudo zypper ar -f http://packman.inode.at/suse/${OSNAME}_${OSVER}/packman.repo
+        progress "Added Packman repository."
     fi
 
-    me=`basename $0`
+    echo
+    safe_run sudo zypper -n --gpg-auto-import-keys in -l libmp3lame0
+    echo
+    progress "Installed libmp3lame0."
+}
 
-    cat <<EOF >&2
-Usage: $me
-       $me -u | --uninstall
-EOF
-    exit "$exit_code"
+install_rpm () {
+    echo "Installing Spotify from the rpm we just built ..."
+    safe_run sudo zypper in "$rpm"
+
+    if ! rpm -q "$RPM_NAME" >/dev/null; then
+        error "Failed to install $rpm :-("
+        error "Please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL"
+    fi
+}
+
+install_rpm_build () {
+    if rpm -q rpm-build >/dev/null; then
+        progress "rpm-build is already installed."
+    else
+        safe_run sudo zypper -n install -lny rpm-build
+    fi
+}
+
+install_wget() {
+    if rpm -q wget >/dev/null; then
+        progress "wget is installed."
+    else
+        safe_run sudo zypper -n install -lny wget
+    fi
+}
+
+maybe_install_libmp3lame0 () {
+    if ! rpm -q libmp3lame0 >/dev/null; then
+        warn "\
+WARNING: You do not have libmp3lame0 installed, so playback of local
+mp3 files will not work.  Would you like me to install this from
+Packman now?"
+        echo -n "Type y/n> "
+        read answer
+        case "$answer" in
+            y|yes|Y|YES)
+                echo
+                install_libmp3lame0
+                ;;
+        esac
+    fi
 }
 
 parse_args () {
@@ -194,132 +296,10 @@ parse_args () {
     fi
 }
 
-progress () { tput bold; tput setaf 2; echo     "$*"; tput sgr0; }
-warn     () { tput bold; tput setaf 3; echo >&2 "$*"; tput sgr0; }
-error    () { tput bold; tput setaf 1; echo >&2 "$*"; tput sgr0; }
-fatal    () { error "$@"; echo; exit 1; }
-
 safe_run () {
     if ! "$@"; then
         fatal "$* failed! Aborting." >&2
         exit 1
-    fi
-}
-
-check_non_root () {
-    if [ "$(id -u)" = "0" ]; then
-        fatal "\
-Please run this script non-root, it's a bit safer that way.
-It will use sudo for commands which need root.  Aborting."
-    fi
-}
-
-maybe_install_libmp3lame0 () {
-    if ! rpm -q libmp3lame0 >/dev/null; then
-        warn "\
-WARNING: You do not have libmp3lame0 installed, so playback of local
-mp3 files will not work.  Would you like me to install this from
-Packman now?"
-        echo -n "Type y/n> "
-        read answer
-        case "$answer" in
-            y|yes|Y|YES)
-                echo
-                install_libmp3lame0
-                ;;
-        esac
-    fi
-}
-
-install_wget() {
-    if rpm -q wget >/dev/null; then
-        progress "wget is installed."
-    else
-        safe_run sudo zypper -n install -lny wget
-    fi
-}
-
-install_rpm_build () {
-    if rpm -q rpm-build >/dev/null; then
-        progress "rpm-build is already installed."
-    else
-        safe_run sudo zypper -n install -lny rpm-build
-    fi
-}
-
-install_libmp3lame0 () {
-    if safe_run zypper lr -d | grep -iq 'packman'; then
-        progress "Packman repository is already configured - good :)"
-    else
-        safe_run sudo zypper ar -f http://packman.inode.at/suse/${OSNAME}_${OSVER}/packman.repo
-        progress "Added Packman repository."
-    fi
-
-    echo
-    safe_run sudo zypper -n --gpg-auto-import-keys in -l libmp3lame0
-    echo
-    progress "Installed libmp3lame0."
-}
-
-check_not_installed () {
-    if rpm -q "$RPM_NAME" >/dev/null; then
-        warn "$RPM_NAME is already installed!  If you want to re-install,
-please uninstall first via:
-
-    $0 -u"
-        return 1
-    else
-        return 0
-    fi
-}
-
-download_spotify_deb () {
-    RPM_DIR="$RPM_TOPDIR/RPMS/$RPMARCH"
-
-    dest="$RPM_SOURCE_DIR/$DEB"
-    if [ ! -e "$dest" ]; then
-        echo "Downloading Spotify .deb package ..."
-        safe_run wget --show-progress --progress=bar -qO "$dest" "$POOL_URL/$DEB"
-        progress ".deb downloaded."
-    else
-        progress "Spotify .deb package already exists:"
-        echo
-        echo "  ${dest/$HOME/~}"
-        echo
-        echo "Skipping download."
-    fi
-}
-
-build_rpm () {
-    echo "About to build $RPM_NAME rpm; please be patient ..."
-    echo
-    sleep 3
-    safe_run rpmbuild -ba "/tmp/$RPM_NAME.spec"
-
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$RPMARCH.rpm"
-
-    if ! [ -e "$rpm" ]; then
-        fatal "
-rpmbuild failed :-(  Please consider filing a bug at:
-
-    $ISSUE_TRACKER_URL"
-    fi
-
-    rm -f /tmp/$RPM_NAME.spec
-
-    echo
-    progress "rpm successfully built!"
-}
-
-install_rpm () {
-    echo "Installing Spotify from the rpm we just built ..."
-    safe_run sudo zypper in "$rpm"
-
-    if ! rpm -q "$RPM_NAME" >/dev/null; then
-        error "Failed to install $rpm :-("
-        error "Please consider filing a bug at:
-
-    $ISSUE_TRACKER_URL"
     fi
 }
 
@@ -331,6 +311,27 @@ uninstall () {
     else
         warn "$RPM_NAME was not installed; nothing to uninstall."
     fi
+}
+
+usage () {
+    # Call as: usage [EXITCODE] [USAGE MESSAGE]
+    exit_code=1
+    if [[ "$1" == [0-9] ]]; then
+        exit_code="$1"
+        shift
+    fi
+    if [ -n "$1" ]; then
+        echo "$*" >&2
+        echo
+    fi
+
+    me=`basename $0`
+
+    cat <<EOF >&2
+Usage: $me
+       $me -u | --uninstall
+EOF
+    exit "$exit_code"
 }
 
 main "$@"
