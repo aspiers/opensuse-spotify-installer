@@ -140,9 +140,11 @@ get_params() {
     ARCH_CURRENT=`echo "$CURRENT" | awk -F '-' '{print $4}' | awk -F '.' '{print $2}'`
     if [ -z $VER_CURRENT ]; then
         VER_CURRENT="(not installed)"
+        progress "Current version = $VER_CURRENT"
+    else
+        progress "Current version = $VER_CURRENT, release = $RELEASE_CURRENT, arch = $ARCH_CURRENT"
     fi
 
-    progress "Current version = $VER_CURRENT, release = $RELEASE_CURRENT, arch = $ARCH_CURRENT"
     progress "Online version  = $VERSION, release = $RELEASE, arch = $RPMARCH"
 
     PROMPTMSG="Upgrade?"
