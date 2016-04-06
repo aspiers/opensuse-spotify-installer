@@ -24,6 +24,7 @@ ARCH=$(arch)
 OSNAME=`cat /etc/os-release | grep "^NAME=" | awk -F '=' '{print $2}' | tr -d '"' | sed 's/ /_/g'`
 OSVER=`cat /etc/os-release | grep "^VERSION=" | awk -F '=' '{print $2}' | awk -F ' ' '{print $1}' | tr -d '"'`
 
+# main function
 main () {
     parse_args "$@"
 
@@ -43,6 +44,7 @@ warn     () { tput bold; tput setaf 3; echo >&2 "$*"; tput sgr0; }
 error    () { tput bold; tput setaf 1; echo >&2 "$*"; tput sgr0; }
 fatal    () { error "$@"; echo; exit 1; }
 
+# other functions
 build_rpm () {
     echo "About to build $RPM_NAME rpm; please be patient ..."
     echo
