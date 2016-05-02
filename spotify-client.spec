@@ -93,16 +93,13 @@ mv usr %{buildroot}
 %define spotifydir /usr/share/spotify
 #%define spotifylibdir %spotifydir
 
-# Fix spotify.desktop file:
-# - trailing semi-colon is required for fields with multiple values
-#   http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#basic-format
-desktop=%{buildroot}%{spotifydir}/spotify.desktop
-sed -i 's/^\(MimeType=.*\);?$/\1;/i ;
-        s/^Categories=/Categories=AudioVideo;Music;Player;Jukebox;/' $desktop
+# Copy spotify.desktop file and icon to builddir so the suse_update_desktop_file macro finds them
+cp %{buildroot}%{spotifydir}/spotify.desktop %{_builddir}/spotify.desktop
+cp %{buildroot}%{spotifydir}/icons/spotify-linux-512.png %{_builddir}/spotify-client.png
 
 # http://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25suse_update_desktop_file
 # http://en.opensuse.org/openSUSE:Packaging_desktop_menu_categories#Multimedia
-%suse_update_desktop_file $desktop
+%suse_update_desktop_file -i spotify
 
 mkdir -p %{buildroot}%{_docdir}/%{name}
 mv %{buildroot}/usr/share/doc/spotify-client/* %{buildroot}%{_docdir}/%{name}/
@@ -140,7 +137,8 @@ fi
 %spotifydir
 %doc %{_docdir}/%{name}
 %{_bindir}/spotify
-#%{_datadir}/applications/spotify.desktop
+/usr/share/applications/spotify.desktop
+/usr/share/pixmaps/spotify-client.png
 
 %changelog
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
