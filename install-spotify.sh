@@ -92,7 +92,12 @@ download_spotify_deb () {
     dest="$RPM_SOURCE_DIR/$DEB"
     if [ ! -e "$dest" ]; then
         echo "Downloading Spotify .deb package ..."
-        safe_run wget --show-progress --progress=bar -qO "$dest" "$POOL_URL/$DEB"
+        # wget version in Leap 42.1 has no --show-progress option, availabe in wget >= 1.16
+        if [ "$OSNAME" == "openSUSE_Leap" ]; then
+            safe_run wget --progress=bar -qO "$dest" "$POOL_URL/$DEB"
+        else
+            safe_run wget --show-progress --progress=bar -qO "$dest" "$POOL_URL/$DEB"
+        fi
         progress ".deb downloaded."
     else
         progress "Spotify .deb package already exists:"
@@ -106,7 +111,12 @@ download_spotify_deb () {
 get_params() {
     # get current online version
     echo "Getting version info..."
-    FILE_LIST=`wget --show-progress --progress=bar -qO - "$POOL_URL" | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+    # wget version in Leap 42.1 has no --show-progress option, availabe in wget >= 1.16
+    if [ "$OSNAME" == "openSUSE_Leap" ]; then
+        FILE_LIST=`wget --progress=bar -qO - "$POOL_URL" | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+    else
+        FILE_LIST=`wget --show-progress --progress=bar -qO - "$POOL_URL" | grep deb | sed 's/.*<a href="\(.*.deb\)".*/\1/g'`
+    fi
     FILE_AMD64=`echo "$FILE_LIST" | grep "amd64" | sort | tail -n 1`
     FILE_I386=`echo "$FILE_LIST" | grep "i386" | sort | tail -n 1`
 
