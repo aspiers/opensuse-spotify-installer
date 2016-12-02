@@ -21,8 +21,11 @@ RPM_SPEC_DIR="/usr/src/packages/SPECS"
 
 # Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
-VERSION="0.8.8.323.gd143501.250-1"
+VERSION="0.9.10.17.g4129e1c.78-1"
 BASENAME="${RPM_NAME}_$VERSION"
+
+# GET openSUSE VERSION
+SVERSION=$(exec lsb-release -sr)
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
@@ -152,7 +155,7 @@ install_libmp3lame0 () {
     if safe_run zypper lr -d | grep -iq 'packman'; then
         progress "Packman repository is already configured - good :)"
     else
-        safe_run sudo zypper ar -f http://packman.inode.at/suse/12.2/packman.repo
+        safe_run sudo zypper ar -f http://packman.inode.at/suse/$SVERSION packman
         progress "Added Packman repository."
     fi
 
