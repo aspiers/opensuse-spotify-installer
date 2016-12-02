@@ -21,8 +21,9 @@ RPM_SPEC_DIR="/usr/src/packages/SPECS"
 
 # Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
-VERSION="0.8.8.323.gd143501.250-1"
-BASENAME="${RPM_NAME}_$VERSION"
+VERSION="0.9.4.183.g644e24e.428" 
+RELEASE="1" 
+BASENAME="${RPM_NAME}_$VERSION-$RELEASE"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
 
@@ -215,8 +216,8 @@ build_rpm () {
     sleep 3
     safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
 
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
-
+    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}-${RELEASE}.$rpmarch.rpm"
+    
     if ! [ -e "$rpm" ]; then
         fatal "
 rpmbuild failed :-(  Please consider filing a bug at:

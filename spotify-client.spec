@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.4.183.g644e24e.428
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -114,7 +114,7 @@ EOF
 
 # fix libraries
 mkdir -p %{buildroot}%{spotifylibdir}
-ln -sf ../libcef.so %{buildroot}%{spotifylibdir}/libcef.so
+ln -sf ../Data/libcef.so %{buildroot}%{spotifylibdir}/libcef.so
 
 # install binary wrapper
 mkdir -p %{buildroot}%{_bindir}
@@ -183,6 +183,9 @@ fi
 #%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Thu Jul 18 2013 Stefan Botter <obs@botter.cc>
+- update to 0.9.1, fix PM-78
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - add README
 
