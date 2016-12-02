@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.0.133.gd18ed58.259
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -183,6 +183,9 @@ fi
 #%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Wed May 15 2013 Chris Widmer <chris@shogun-toolbox.org>
+- updated to Version 0.9.0.133.gd18ed58.259
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - add README
 
