@@ -13,7 +13,7 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
+Version:        0.9.11.27.g2b1a638.81
 Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
@@ -114,7 +114,7 @@ EOF
 
 # fix libraries
 mkdir -p %{buildroot}%{spotifylibdir}
-ln -sf ../libcef.so %{buildroot}%{spotifylibdir}/libcef.so
+ln -sf ../Data/libcef.so %{buildroot}%{spotifylibdir}/libcef.so
 
 # install binary wrapper
 mkdir -p %{buildroot}%{_bindir}
