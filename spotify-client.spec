@@ -13,8 +13,8 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
-Release:        1
+Version:        @SPOTIFY_VERSION@
+Release:        @SPOTIFY_RELEASE@
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
@@ -67,9 +67,9 @@ It includes the following features:
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
-tar -xzf data.tar.gz
+tar -xJf data.tar.xz
 # remove used files
-rm {control,data}.tar.gz debian-binary
+rm control.tar.gz data.tar.xz debian-binary
 
 %define _use_internal_dependency_generator 0
 %define __find_requires %_builddir/%{name}-%{version}/find-requires.sh

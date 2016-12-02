@@ -5,8 +5,8 @@
 #
 
 Name:           spotify-installer
-Version:        0.8.8.323.gd143501.250
-Release:        2
+Version:        @SPOTIFY_VERSION@
+Release:        @SPOTIFY_RELEASE@
 License:        MIT
 Summary:        Installer for Spotify desktop client
 Url:            https://github.com/aspiers/opensuse-spotify-installer/
