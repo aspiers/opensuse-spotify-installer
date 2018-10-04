@@ -1,5 +1,14 @@
 # Spotify automatic installer for openSUSE
 
+## WARNING: This repository is currently unmaintained!
+
+We are looking for a volunteer to take over maintainership!  Please
+see [issue #50](https://github.com/aspiers/opensuse-spotify-installer/issues/50)
+if you are interested in volunteering, or just want the latest
+information.
+
+## Description
+
 This script avoids the need to illegally redistribute Spotify binaries
 by downloading the Linux client `.deb` from
 [repository.spotify.com](http://repository.spotify.com/pool/non-free/s/spotify/),
