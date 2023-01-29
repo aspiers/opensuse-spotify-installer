@@ -1,6 +1,6 @@
 # Spotify automatic installer for openSUSE
 
-## WARNING: This repository is currently unmaintained!
+## WARNING: This repository is currently broken and unmaintained!
 
 We are looking for a volunteer to take over maintainership!  Please
 see [issue #50](https://github.com/aspiers/opensuse-spotify-installer/issues/50)
@@ -9,7 +9,7 @@ information.
 
 ## Description
 
-This script avoids the need to illegally redistribute Spotify binaries
+This script avoided the need to illegally redistribute Spotify binaries
 by downloading the Linux client `.deb` from
 [repository.spotify.com](http://repository.spotify.com/pool/non-free/s/spotify/),
 converting it to `.rpm` format, and then installing it along with some
@@ -19,28 +19,32 @@ them to be.
 ## Current status
 
 Currently
-[this code is broken](https://github.com/aspiers/opensuse-spotify-installer/issues),
-however
-[work is underway to fix it](https://github.com/aspiers/opensuse-spotify-installer/pull/37).
-In the mean time, you may have luck with the PackMan installer which
-is based on a patched version of this code - see below for details.
-If that fails, you could also try
-[`spotify-make`](https://github.com/leamas/spotify-make).  The hope is
-that we ultimately reach
+[this code is broken](https://github.com/aspiers/opensuse-spotify-installer/issues).
+Work to fix it, such as [PR #37](https://github.com/aspiers/opensuse-spotify-installer/pull/37)
+has stalled and seems unlikely to resume any time soon.
+
+In the mean time, you may find the following alternatives useful:
+
+- [megamaced/spotify-easyrpm: Download, convert and install the Spotify for Linux package](https://github.com/megamaced/spotify-easyrpm)
+- [Spotify Web Player](https://open.spotify.com/)
+- the PackMan installer which is based on a patched version of this code - see below for details
+- [`spotify-make`](https://github.com/leamas/spotify-make)
+
+The hope is that we ultimately reach
 [a unified solution](https://github.com/aspiers/opensuse-spotify-installer/pull/37#issuecomment-95361176)
 which reuses the combined efforts of as many people as possible, in an
 efficient and collaborative manner.
 
-## How to use
+## How to try it
 
 This installer is conveniently pre-packaged on
 [PackMan](http://packman.links2linux.org/).  The easiest way to use it
 is as follows:
 
-1. Install the `spotify-installer` package from Packman via [1-click install](http://packman.links2linux.org/install/spotify-installer) (you can also find the button on [this page](http://packman.links2linux.org/package/spotify-installer)), or via [YaST and/or zypper](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation).
+1. Install the `spotify-installer` package from PackMan via [1-click install](http://packman.links2linux.org/install/spotify-installer) (you can also find the button on [this page](http://packman.links2linux.org/package/spotify-installer)), or via [YaST and/or zypper](http://wiki.links2linux.de/packman:faq_en#software_installation_updates_deinstallation).
 2. Run `install-spotify` as a non-root user (e.g. from any terminal program).
 
-Alternatively, once we fix some known issues, you will be able to skip
+Alternatively, if we fix some known issues, you will be able to skip
 PackMan and use it as follows:
 
 1. Download the [`install-spotify.sh`](https://raw.github.com/aspiers/opensuse-spotify-installer/master/install-spotify.sh) script
