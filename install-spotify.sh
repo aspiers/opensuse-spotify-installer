@@ -18,20 +18,26 @@ RPM_SOURCE_DIR="$RPM_TOPDIR/SOURCES"
 # directory, so the spec file goes in /usr/src/packages even though
 # the rest of the rpmbuild stuff lives in $HOME.
 RPM_SPEC_DIR="/usr/src/packages/SPECS"
-
-# Name of file residing within official Spotify repository above
 RPM_NAME="spotify-client"
-VERSION="0.8.8.323.gd143501.250-1"
-BASENAME="${RPM_NAME}_$VERSION"
 
 ISSUE_TRACKER_URL="https://github.com/aspiers/opensuse-spotify-installer/issues"
+
+SUSE_VERSION=`cat /etc/os-release | grep VERSION_ID | sed 's/VERSION_ID="\(.*\)"/\1/'`
 
 main () {
     parse_args "$@"
 
     check_non_root
 
-    if [ -z "$uninstall" ]; then
+    if [ -z $uninstall ]; then
+        check_arch
+        get_spotify_version
+
+        # Name of file residing within official Spotify repository above
+        if [[ -z $BASENAME ]]; then
+            BASENAME="${RPM_NAME}_${spotify_full_version}"
+        fi
+
         if check_not_installed; then
             safe_run mkdir -p "$RPM_TOPDIR"/{BUILD,BUILDROOT,SPECS,SOURCES,SRPMS,RPMS/{i586,x86_64}}
             install_rpm_build
@@ -152,7 +158,7 @@ install_libmp3lame0 () {
     if safe_run zypper lr -d | grep -iq 'packman'; then
         progress "Packman repository is already configured - good :)"
     else
-        safe_run sudo zypper ar -f http://packman.inode.at/suse/12.2/packman.repo
+        safe_run sudo zypper ar -f http://packman.inode.at/suse/${SUSE_VERSION}/packman.repo
         progress "Added Packman repository."
     fi
 
@@ -175,26 +181,9 @@ please uninstall first via:
 }
 
 download_spotify_deb () {
-    arch=$(arch)
-    if [ "$arch" == "x86_64" ]; then
-        deb=${BASENAME}_amd64.deb
-        rpmarch="x86_64"
-    elif [ "$arch" == "i686" ]; then
-        deb=${BASENAME}_i386.deb
-        rpmarch="i586"
-    else
-        fatal "
-Sorry, $arch architecture isn't supported.  If you think this is a
-mistake, please consider filing a bug at:
-
-    $ISSUE_TRACKER_URL
-
-Aborting.
-"
-    fi
-
     RPM_DIR="$RPM_TOPDIR/RPMS/$rpmarch"
 
+    deb="${BASENAME}_${debarch}.deb"
     dest="$RPM_SOURCE_DIR/$deb"
     if [ ! -e "$dest" ]; then
         echo "Downloading Spotify .deb package ..."
@@ -215,7 +204,8 @@ build_rpm () {
     sleep 3
     safe_run rpmbuild -ba "$RPM_SPEC_DIR/${RPM_NAME}.spec"
 
-    rpm="$RPM_DIR/${RPM_NAME}-${VERSION}.$rpmarch.rpm"
+    rpm="$RPM_DIR/${RPM_NAME}-${spotify_full_version}.$rpmarch.rpm"
+    echo "$rpm"
 
     if ! [ -e "$rpm" ]; then
         fatal "
@@ -249,6 +239,48 @@ uninstall () {
     else
         warn "$RPM_NAME was not installed; nothing to uninstall."
     fi
+}
+
+check_arch () {
+    arch=$(arch)
+    if [ "$arch" == "x86_64" ]; then
+        rpmarch="x86_64"
+        debarch="amd64"
+    elif [ "$arch" == "i686" ]; then
+        rpmarch="i586"
+        debarch="i386"
+    else
+        fatal "
+Sorry, $arch architecture isn't supported.  If you think this is a
+mistake, please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL
+
+Aborting.
+"
+    fi
+}
+
+get_spotify_version () {
+    echo -n "checking Spotify version..."
+
+    spotify_full_version=`wget --quiet --output-document=- http://repository.spotify.com/pool/non-free/s/spotify/ | \
+        grep "href=\"spotify-client_.*_${debarch}" | \
+        sed "s/.*href=\"spotify-client_\(.*\)_${debarch}.deb\">.*/\1/"`
+
+    if [[ -z ${spotify_full_version} ]]; then
+        fatal "
+Failed to get Spotify version! It's possible that spotify changed their downloads page. Please consider filing a bug at:
+
+    $ISSUE_TRACKER_URL
+
+Aborting.
+"
+    fi
+
+    echo " using ${spotify_full_version}"
+    export SPOTIFY_VERSION=`echo ${spotify_full_version} | sed "s/\(.*\)-.*/\1/"`
+    export SPOTIFY_RELEASE=`echo ${spotify_full_version} | sed "s/.*-\(.*\)/\1/"`
 }
 
 main "$@"

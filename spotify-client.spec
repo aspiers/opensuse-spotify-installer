@@ -13,16 +13,16 @@
 # published by the Open Source Initiative.
 
 Name:           spotify-client
-Version:        0.8.8.323.gd143501.250
-Release:        1
 License:        Commercial
 Summary:        Desktop client for Spotify streaming music service
 Url:            http://www.spotify.com/download/previews/
 Group:          Productivity/Multimedia/Sound/Players
+Version:        %{getenv:SPOTIFY_VERSION}
+Release:        %{getenv:SPOTIFY_RELEASE}
 %ifarch x86_64
-Source0: spotify-client_%{version}-%{release}_amd64.deb
+Source0:        spotify-client_%{version}-%{release}_amd64.deb
 %else
-Source0: spotify-client_%{version}-%{release}_i386.deb
+Source0:        spotify-client_%{version}-%{release}_i386.deb
 %endif
 NoSource:       0
 %if 0%{?suse_version}
@@ -67,9 +67,9 @@ It includes the following features:
 # unpack deb
 ar -x %{SOURCE0}
 # unpack data
-tar -xzf data.tar.gz
+tar -xf data.tar.xz
 # remove used files
-rm {control,data}.tar.gz debian-binary
+rm control.tar.gz data.tar.xz debian-binary
 
 %define _use_internal_dependency_generator 0
 %define __find_requires %_builddir/%{name}-%{version}/find-requires.sh
@@ -183,6 +183,9 @@ fi
 #%{_datadir}/applications/spotify.desktop
 
 %changelog
+* Fri Apr 17 2015 Damien Radtke <damienradtke@gmail.com>
+- fetch SUSE and Spotify versions on the fly
+
 * Sat Jan 05 2013 Adam Spiers <spotify-on-opensuse@adamspiers.org>
 - add README
 
